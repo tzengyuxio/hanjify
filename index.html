@@ -145,11 +145,12 @@
   <div class="container">
     <h1 id="title">英語漢字化工具</h1>
 
-    <div class="language-buttons"></div>
-    <button onclick="changeLanguage('en')" id="en-btn">English</button>
-    <button onclick="changeLanguage('zh_tw')" id="zh_tw-btn">繁體中文</button>
-    <button onclick="changeLanguage('zh_cn')" id="zh_cn-btn">简体中文</button>
-    <button onclick="changeLanguage('ja')" id="ja-btn">日本語</button>
+    <div class="language-buttons">
+      <button onclick="changeLanguage('en')" id="en-btn">English</button>
+      <button onclick="changeLanguage('zh_tw')" id="zh_tw-btn">繁體中文</button>
+      <button onclick="changeLanguage('zh_cn')" id="zh_cn-btn">简体中文</button>
+      <button onclick="changeLanguage('ja')" id="ja-btn">日本語</button>
+    </div>
   </div>
 
   <div class="description">
@@ -431,6 +432,8 @@
             outputHTML += `<ruby>${wordList[baseWord]}<rt>${displayedPart}</rt></ruby>${remainingPart}`;
             if (remainingPart === "") {
               lastIsHanji = true;
+            } else {
+              outputHTML += " ";
             }
           } else {
             if (lastIsHanji) {
