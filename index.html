@@ -429,7 +429,9 @@
             const displayedPart = word.slice(0, baseWordLength);
             const remainingPart = word.slice(baseWordLength);
             outputHTML += `<ruby>${wordList[baseWord]}<rt>${displayedPart}</rt></ruby>${remainingPart}`;
-            lastIsHanji = true;
+            if (remainingPart === "") {
+              lastIsHanji = true;
+            }
           } else {
             if (lastIsHanji) {
               outputHTML += ` ${word} `;
