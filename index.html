@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>英語漢字化工具</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+      }
+      .ruby-text {
+        font-size: 0.8em;
+        color: #666;
+      }
+      rt {
+        font-family: "Ariel Narrow";
+        margin-left: 0.25em;
+        margin-right: 0.25em;
+      }
+      #outputText {
+        font-family: "Monaco", "Menlo", "Consolas", monospace,
+          "Microsoft JhengHei", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>英語漢字化工具</h1>
+    <textarea
+      id="inputText"
+      rows="10"
+      cols="80"
+      placeholder="在這裡輸入英文文本..."
+    ></textarea>
+    <br /><br />
+    <button onclick="convertToHanzi()">漢字化</button>
+    <label>
+      <input type="checkbox" id="show-ruby" checked />
+      顯示 ruby 文字
+    </label>
+    <h2>漢字化後的文本：</h2>
+    <div id="outputText"></div>
+
+    <script>
+      let wordMap = {};
+
+      // 從 JSON 文件讀取替換詞彙對應表
+      fetch("word_list.json")
+        .then((response) => response.json())
+        .then((data) => {
+          wordMap = data;
+        })
+        .catch((error) => {
+          console.error("Error loading wordMap.json:", error);
+        });
+
+      function convertToHanzi() {
+        const inputText = document.getElementById("inputText").value;
+        let outputHTML = "";
+        let lastIsHanji = false;
+
+        const suffixes = ["s", "ing", "ed"];
+        // 將對應表中的詞彙進行替換
+        const lines = inputText.split("\n");
+        for (const line of lines) {
+          const words = line.split(" ");
+          for (const word of words) {
+            let baseWord = word;
+            if (
+              baseWord.endsWith(",") ||
+              baseWord.endsWith(".") ||
+              baseWord.endsWith("!") ||
+              baseWord.endsWith("?") ||
+              baseWord.endsWith(":")
+            ) {
+              baseWord = baseWord.slice(0, -1);
+            }
+            if (!wordMap[baseWord]) {
+              for (const suffix of suffixes) {
+                if (baseWord.endsWith(suffix)) {
+                  baseWord = baseWord.slice(0, -suffix.length);
+                  break;
+                }
+              }
+            }
+            if (wordMap[baseWord]) {
+              outputHTML += `<ruby>${
+                wordMap[baseWord]
+              }<rt>${baseWord}</rt></ruby>${word.slice(baseWord.length)}`;
+              lastIsHanji = true;
+            } else {
+              if (lastIsHanji) {
+                outputHTML += ` ${word} `;
+              } else {
+                outputHTML += `${word} `;
+              }
+              lastIsHanji = false;
+            }
+          }
+          outputHTML += "<br/>";
+        }
+
+        // 輸出結果
+        document.getElementById("outputText").innerHTML = outputHTML;
+      }
+
+      document
+        .getElementById("show-ruby")
+        .addEventListener("change", function () {
+          const showRuby = this.checked;
+          const outputHTML = document.getElementById("outputText");
+          const rtElements = outputHTML.getElementsByTagName("rt");
+          for (const rt of rtElements) {
+            if (showRuby) {
+              rt.style.display = "ruby-text";
+            } else {
+              rt.style.display = "none";
+            }
+          }
+        });
+    </script>
+  </body>
+</html>
