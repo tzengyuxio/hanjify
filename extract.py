@@ -1,10 +1,12 @@
 import csv
 import json
+import os
+import shutil
 
 
-def convert_csv_to_json(input_file, output_file):
+def convert_csv_to_js(input_file, output_file):
     # Read CSV file
-    with open(input_file, "r") as csvfile:
+    with open(input_file, "r", encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         counter = 0
         data = {}
@@ -15,14 +17,23 @@ def convert_csv_to_json(input_file, output_file):
                 print(f"[{counter}] '{word}' -> '{hanzi}'...")
                 data[word] = hanzi
 
-    # Save to JSON file
-    with open(output_file, "w") as jsonfile:
-        json.dump(data, jsonfile, ensure_ascii=False)
+    # Backup existing file if it exists
+    if os.path.exists(output_file):
+        backup_file = output_file.replace('.js', '_backup.js')
+        shutil.copy2(output_file, backup_file)
+        print(f"Existing file backed up as {backup_file}")
+
+    # Save to JavaScript file
+    with open(output_file, "w", encoding='utf-8') as jsfile:
+        jsfile.write("const wordList = ")
+        json.dump(data, jsfile, ensure_ascii=False)
+        jsfile.write(";")
 
     print(f"Total words: {counter}")
+    print(f"Data has been written to {output_file}")
 
 
 if __name__ == "__main__":
     csv_file = "hanjify_translated.csv"
-    json_file = "word_list.json"
-    convert_csv_to_json(csv_file, json_file)
+    js_file = "wordlist.js"
+    convert_csv_to_js(csv_file, js_file)

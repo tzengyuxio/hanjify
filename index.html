@@ -1,167 +1,541 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>英語漢字化工具</title>
-    <style>
-      body {
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #f5f5f5;
-      }
-      h1, h2 {
-        color: #2c3e50;
-      }
-      .container {
-        background-color: white;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      .description {
-        background-color: #e8f4f8;
-        border-left: 4px solid #3498db;
-        padding: 15px;
-        margin-bottom: 20px;
-        border-radius: 0 8px 8px 0;
-      }
-      textarea, #outputText {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 16px;
-      }
-      button {
-        background-color: #3498db;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 4px;
-        transition: background-color 0.3s;
-      }
-      button:hover {
-        background-color: #2980b9;
-      }
-      .ruby-text {
-        font-size: 0.8em;
-        color: #666;
-      }
-      rt {
-        font-family: "Arial Narrow", Arial, sans-serif;
-        margin-left: 0.25em;
-        margin-right: 0.25em;
-      }
-      #outputText {
-        font-family: "Monaco", "Menlo", "Consolas", monospace, "Microsoft JhengHei", sans-serif;
-        background-color: #f9f9f9;
-        min-height: 100px;
-      }
-      .checkbox-wrapper {
-        margin-top: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>英語漢字化工具</h1>
-      
-      <div class="description">
-        <p>這個工具可以將英文文本轉換為漢字表示。使用方法：在下方文本框輸入英文，點擊"漢字化"按鈕即可看到轉換結果。您可以選擇是否顯示原文注音。</p>
-      </div>
 
-      <textarea
-        id="inputText"
-        rows="8"
-        placeholder="在這裡輸入英文文本..."
-      ></textarea>
-      <br /><br />
-      <button onclick="convertToHanzi()">漢字化</button>
-      <div class="checkbox-wrapper">
-        <label>
-          <input type="checkbox" id="show-ruby" checked />
-          顯示原文注音
-        </label>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>英語漢字化工具</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    h1,
+    h2 {
+      color: #2c3e50;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .description {
+      background-color: #e8f4f8;
+      border-left: 4px solid #3498db;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+      color: #999; /* 預設文字顏色設為灰色 */
+    }
+    textarea:focus {
+      color: #333; /* 當 textarea 獲得焦點時，文字顏色變為正常 */
+    }
+    #outputText {
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Heiti TC", "Apple LiGothic", sans-serif;
+      background-color: #f9f9f9;
+      min-height: 100px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    rt {
+      font-family: "Arial Narrow", Arial, sans-serif;
+      font-size: 1em;
+      color: #666;
+      margin: 0 0.25em;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .ruby-text {
+      font-size: 0.8em;
+      color: #666;
+    }
+
+    .checkbox-wrapper {
+      margin-top: 10px;
+    }
+
+    .language-buttons {
+      margin-bottom: 20px;
+    }
+
+    .button-group {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    #copyButton {
+      margin-left: 10px;
+    }
+
+    .language-buttons button {
+      margin-right: 10px;
+    }
+
+    .language-buttons button.active {
+      background-color: #2c3e50;
+    }
+
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 0.9em;
+    }
+
+    .faq {
+      background-color: #e8f4f8;
+      border-left: 4px solid #3498db;
+      padding: 15px;
+      margin-top: 30px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .faq-item {
+      margin-bottom: 15px;
+    }
+
+    .faq-question {
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .faq-answer {
+      display: none;
+      margin-top: 10px;
+      padding-left: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1 id="title">英語漢字化工具</h1>
+
+    <div class="language-buttons"></div>
+    <button onclick="changeLanguage('en')" id="en-btn">English</button>
+    <button onclick="changeLanguage('zh_tw')" id="zh_tw-btn">繁體中文</button>
+    <button onclick="changeLanguage('zh_cn')" id="zh_cn-btn">简体中文</button>
+    <button onclick="changeLanguage('ja')" id="ja-btn">日本語</button>
+  </div>
+
+  <div class="description">
+    <p id="description">這個工具可以將英文文本轉換為漢字表示。使用方法：在下方文本框輸入英文，點擊"漢字化"按鈕即可看到轉換結果。您可以選擇是否顯示原文注音。</p>
+  </div>
+
+  <textarea id="inputText" rows="8"
+    placeholder="在這裡輸入英文文本...">Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, "and what is the use of a book," thought Alice "without pictures or conversations?"</textarea>
+  <br /><br />
+  <div class="button-group">
+    <button onclick="convertToHanzi()" id="convertButton">漢字化</button>
+    <button onclick="copyOutput()" id="copyButton">複製結果</button>
+  </div>
+  <div class="checkbox-wrapper">
+    <label>
+      <input type="checkbox" id="show-ruby" checked />
+      <span id="showRubyLabel">顯示原文注音</span>
+    </label>
+  </div>
+  <h2 id="outputTitle">漢字化後的文本</h2>
+  <div id="outputText"></div>
+
+  <div class="faq">
+    <h2 id="faqTitle">常見問題</h2>
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleAnswer(this)">
+        <span id="faq1Q">這個工具是如何運作的？</span>
       </div>
-      <h2>漢字化後的文本：</h2>
-      <div id="outputText"></div>
+      <div class="faq-answer">
+        <span id="faq1A">本工具使用預先定義的英文單詞到漢字的映射表來進行轉換。它會將輸入的英文文本分解成單詞，然後查找每個單詞的對應漢字。</span>
+      </div>
     </div>
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleAnswer(this)">
+        <span id="faq2Q">為什麼有些單詞沒有被轉換？</span>
+      </div>
+      <div class="faq-answer">
+        <span id="faq2A">如果某個單詞在我們的映射表中沒有對應的漢字，它將保持原樣。這通常發生在專有名詞、技術術語或不常用的詞彙上。</span>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleAnswer(this)">
+        <span id="faq3Q">我可以貢獻新的單詞映射嗎？</span>
+      </div>
+      <div class="faq-answer">
+        <span id="faq3A">目前我們沒有開放用戶直接貢獻新的單詞映射。但如果您有建議，可以通過 Twitter 聯繫作者。</span>
+      </div>
+    </div>
+  </div>
 
-    <!-- 在 body 結束標籤前加入這行，引入 wordlist.js -->
-    <script src="wordlist.js"></script>
+  <div class="footer">
+    <p>made by <a href="https://twitter.com/tzengyuxio" target="_blank" id="authorTwitter">@tzengyuxio</a></p>
+  </div>
+  </div>
 
-    <script>
-      function convertToHanzi() {
-        const inputText = document.getElementById("inputText").value;
-        let outputHTML = "";
-        let lastIsHanji = false;
+  <script src="wordlist.js"></script>
 
-        const suffixes = ["s", "ing", "ed"];
-        // 將對應表中的詞彙進行替換
-        const lines = inputText.split("\n");
-        for (const line of lines) {
-          const words = line.split(" ");
-          for (const word of words) {
-            let baseWord = word;
-            if (
-              baseWord.endsWith(",") ||
-              baseWord.endsWith(".") ||
-              baseWord.endsWith("!") ||
-              baseWord.endsWith("?") ||
-              baseWord.endsWith(":")
-            ) {
-              baseWord = baseWord.slice(0, -1);
-            }
-            if (!wordList[baseWord]) {
-              for (const suffix of suffixes) {
-                if (baseWord.endsWith(suffix)) {
-                  baseWord = baseWord.slice(0, -suffix.length);
-                  break;
-                }
-              }
-            }
-            if (wordList[baseWord]) {
-              outputHTML += `<ruby>${
-                wordList[baseWord]
-              }<rt>${baseWord}</rt></ruby>${word.slice(baseWord.length)}`;
-              lastIsHanji = true;
-            } else {
-              if (lastIsHanji) {
-                outputHTML += ` ${word} `;
-              } else {
-                outputHTML += `${word} `;
-              }
-              lastIsHanji = false;
-            }
-          }
-          outputHTML += "<br/>";
-        }
+  <script>
+    let currentLanguage = 'en';
 
-        // 輸出結果
-        document.getElementById("outputText").innerHTML = outputHTML;
+    const languages = {
+      en: {
+        title: "English to Hanzi Converter",
+        description: "This tool converts English text into Hanzi (Chinese characters) representation. How to use: Enter English text in the box below, click the 'Convert to Hanzi' button to see the result. You can choose whether to display the original text as ruby.",
+        placeholder: "Enter English text here...",
+        convertButton: "Convert to Hanzi",
+        showRubyLabel: "Show original text as ruby",
+        outputTitle: "Converted text:",
+        copyButton: "Copy Result",
+        copySuccess: "Text copied to clipboard!",
+        copyError: "Copy failed, please copy manually.",
+        faqTitle: "Frequently Asked Questions",
+        faq1Q: "What is \"Hanjify\"?",
+        faq1A: `
+          <strong>Hanjify</strong> is the result of verbalizing "Hanji". Similar to the concept of "Romanization" or "Latinization", it refers to representing a language using Chinese characters.
+          <br/><br/>
+          <strong>Hanji</strong> is the greatest common factor of the pronunciations of Chinese characters in China (Hanzi), Japan (Kanji), and Korea (Hanja). Since the Chinese characters used on this website are not limited to traditional Chinese, simplified Chinese, Japanese, or Korean characters, but cover characters from all these regions, the term "Hanji" was created to collectively refer to these characters from different sources.
+        `,
+        faq2Q: "Why was the Hanjify tool created?",
+        faq2A: `
+          When I just graduated from university, I had a strong interest in the development of writing systems and languages, especially the history of the Romanization of Chinese characters. Influenced by reverse thinking at that time, I had a sudden idea: what would be the effect of "Hanjifying" English?
+          <br/><br/>
+          Moreover, for people who don't belong to the Chinese character cultural circle, many believe there's a high degree of overlap between Chinese and Japanese writing systems. I began to wonder if it was possible to guess the meaning solely based on written Chinese characters without understanding each other's languages. Therefore, I hope that through this tool, those who understand Chinese characters but not English can also experience the fun of guessing.
+          <br/><br/>
+          Of course, just as China and Japan have both similarities and differences in their use of Chinese characters, "English Hanjification" also has its peculiarities in using Chinese characters.
+        `,
+        faq3Q: "What are the principles and considerations in designing Hanjify?",
+        faq3A: `
+          <ol>
+            <li><strong>Maintaining the essence of English</strong>: Hanjifying English is not translation; English remains the foundation, with Hanzi being just one form of expression. Therefore, I avoid letting Chinese or Japanese grammar influence its structure.</li>
+            <li><strong>Neutral historical background</strong>: I hope this "Hanjification" appears as if it developed naturally and independently at some historical point, rather than purely from modern China or Japan. Thus, the chosen characters are not limited to Chinese and Japanese, but also include Korea's "Hanja Education Basic Characters" (e.g., "鷄"), as well as ancient characters (e.g., "祘", "斈斍"), etc.</li>
+            <li><strong>Word construction</strong>: While partly referencing modern Chinese and Japanese terms, I more often try to imagine: if an English native speaker understood some Hanzi and looked up characters in a dictionary to transcribe English words, what would the result be?</li>
+            <li><strong>Open for discussion</strong>: As I'm not a native English speaker, this conception might not be entirely accurate. If you have better word choices or interesting ideas, please feel free to share them with me anytime.</li>
+            <li><strong>Fun experience</strong>: I hope this website can bring some enjoyment. Try sending "Hanjified" English to your friends and see if they can guess the meaning!</li>
+          </ol>
+        `
+      },
+      zh_tw: {
+        title: "英語漢字化工具",
+        description: "這個工具可以將英文文本轉換為漢字表示。使用方法：在下方文本框輸入英文，點擊「漢字化」按鈕即可看到轉換結果。您可以選擇是否顯示原文注音。",
+        placeholder: "在這裡輸入英文文本...",
+        convertButton: "漢字化",
+        showRubyLabel: "顯示原文注音",
+        outputTitle: "漢字化後的文本：",
+        copyButton: "複製結果",
+        copySuccess: "文本已複製到剪貼簿！",
+        copyError: "複製失敗，請手動複製。",
+        faqTitle: "常見問題",
+        faq1Q: "什麼是 \"Hanjify\"?",
+        faq1A: `
+          <strong>Hanjify</strong> 是將 "Hanji" 動詞化的結果。類似於「拉丁化」（Romanization/Latinization）的概念，它指的是將一個語言用漢字來表示。
+          <br/><br/>
+          <strong>Hanji</strong> 則是綜合了中國（Hanzi）、日本（Kanji）、韓國（Hanja）三個地區對漢字的發音的最大公因數。由於這個網站所使用的漢字並不局限於繁體中文、簡體中文、日文或韓國的漢字，而是涵蓋這些地區的所有漢字，因此創造了「Hanji」這個詞來統稱這些不同來源的漢字。
+        `,
+        faq2Q: "為什麼要創建 Hanjify 這個工具？",
+        faq2A: `
+          大學剛畢業時，我對文字和語言的發展有著濃厚的興趣，特別是漢字拉丁化的歷史。在當時的逆向思維影響下，突發奇想：如果將英語「漢字化」，會是怎樣的效果？
+          <br/><br/>
+          此外，對於不屬於漢字文化圈的人來說，許多人認為中日文之間的文字存在高度重疊。我開始思考是否能在不理解彼此語言的前提下，僅靠書面漢字來猜測意思。因此，我希望通過這個工具，讓那些懂漢字卻不懂英文的人也能感受這種猜測的樂趣。
+          <br/><br/>
+          當然，正如中日兩國對漢字的使用既有相同也有不同之處，「英語漢字化」也在使用漢字時有其特殊之處。
+        `,
+        faq3Q: "設計 Hanjify 時的原則與考量",
+        faq3A: `
+          <ol>
+            <li><strong>保持英語本質</strong>：英語漢字化不是翻譯，英語仍然是基礎，漢字只是表現形式之一。因此，我避免讓中文或日文的語法影響其結構。</li>
+            <li><strong>中立的歷史背景</strong>：我希望這種「漢字化」像是某個歷史時間點上自然獨立發展出的結果，而不是單純來自現代的中國或日本。因此，選用的漢字不限於中日，還包括韓國的「漢文教育用基礎漢字」（如「鷄」），以及古字（如「祘」、「斈斍」）等。</li>
+            <li><strong>詞語構建</strong>：部分參考現代中日的詞語，但更多時候我嘗試想像，如果一個英語母語者了解一些漢字，並查字典來轉寫英文字詞，會是什麼樣的結果？</li>
+            <li><strong>開放討論</strong>：由於我並非英語母語者，這種設想可能並不夠精確。如果有更好的詞語選擇或有趣的想法，歡迎隨時與我分享。</li>
+            <li><strong>樂趣體驗</strong>：希望這個網站能帶來一些樂趣。可以將「漢字化」後的英文發給朋友，看看他們是否能猜出其中的意思！</li>
+          </ol>
+        `
+      },
+      zh_cn: {
+        title: "英语汉字化工具",
+        description: "这个工具可以将英文文本转换为汉字表示。使用方法：在下方文本框输入英文，点击「汉字化」按钮即可看到转换结果。您可以选择是否显示原文注音。",
+        placeholder: "在这里输入英文文本...",
+        convertButton: "汉字化",
+        showRubyLabel: "显示原文注音",
+        outputTitle: "汉字化后的文本：",
+        copyButton: "拷贝结果",
+        copySuccess: "文本已拷贝到剪贴板！",
+        copyError: "拷贝失败，请手动拷贝。",
+        faqTitle: "常见问题",
+        faq1Q: "> 什么是 \"Hanjify\"?",
+        faq1A: `
+          <strong>Hanjify</strong> 是将 "Hanji" 动词化的结果。类似于"拉丁化"（Romanization/Latinization）的概念，它指的是将一种语言用汉字来表示。
+          <br/><br/>
+          <strong>Hanji</strong> 则是综合了中国（Hanzi）、日本（Kanji）、韩国（Hanja）三个地区对汉字的发音的最大公因数。由于这个网站所使用的汉字并不局限于繁体中文、简体中文、日文或韩国的汉字，而是涵盖这些地区的所有汉字，因此创造了"Hanji"这个词来统称这些不同来源的汉字。
+        `,
+        faq2Q: "为什么要创建 Hanjify 这个工具？",
+        faq2A: `
+          大学刚毕业时，我对文字和语言的发展有着浓厚的兴趣，特别是汉字拉丁化的历史。在当时的逆向思维影响下，突发奇想：如果将英语"汉字化"，会是怎样的效果？
+          <br/><br/>
+          此外，对于不属于汉字文化圈的人来说，许多人认为中日文之间的文字存在高度重叠。我开始思考是否能在不理解彼此语言的前提下，仅靠书面汉字来猜测意思。因此，我希望通过这个工具，让那些懂汉字却不懂英文的人也能感受这种猜测的乐趣。
+          <br/><br/>
+          当然，正如中日两国对汉字的使用既有相同也有不同之处，"英语汉字化"也在使用汉字时有其特殊之处。
+        `,
+        faq3Q: "设计 Hanjify 时的原则与考量",
+        faq3A: `
+          <ol>
+            <li><strong>保持英语本质</strong>：英语汉字化不是翻译，英语仍然是基础，汉字只是表现形式之一。因此，我避免让中文或日文的语法影响其结构。</li>
+            <li><strong>中立的历史背景</strong>：我希望这种"汉字化"像是某个历史时间点上自然独立发展出的结果，而不是单纯来自现代的中国或日本。因此，选用的汉字不限于中日，还包括韩国的"汉文教育用基础汉字"（如"鷄"），以及古字（如"祘"、"斈斍"）等。</li>
+            <li><strong>词语构建</strong>：部分参考现代中日的词语，但更多时候我尝试想象，如果一个英语母语者了解一些汉字，并查字典来转写英文字词，会是什么样的结果？</li>
+            <li><strong>开放讨论</strong>：由于我并非英语母语者，这种设想可能并不够精确。如果有更好的词语选择或有趣的想法，欢迎随时与我分享。</li>
+            <li><strong>乐趣体验</strong>：希望这个网站能带来一些乐趣。可以将"汉字化"后的英文发给朋友，看看他们是否能猜出其中的意思！</li>
+          </ol>
+        `
+      },
+      ja: {
+        title: "英語漢字化ツール",
+        description: "このツールは英語のテキストを漢字表現に変換します。使用方法：下のテキストボックスに英語を入力し、「漢字化」ボタンをクリックすると変換結果が表示されます。原文のルビを表示するかどうかを選択できます。",
+        placeholder: "ここに英語のテキストを入力してください...",
+        convertButton: "漢字化",
+        showRubyLabel: "原文のルビを表示",
+        outputTitle: "漢字化されたテキスト：",
+        copyButton: "結果をコピー",
+        copySuccess: "テキストがクリップボードにコピーされました！",
+        copyError: "コピーに失敗しました。手動でコピーてください。",
+        faqTitle: "よくある質問",
+        faq1Q: "「Hanjify」とは何ですか？",
+        faq1A: `
+          <strong>Hanjify</strong>は「Hanji」を動詞化した結果です。「ローマ字化」（Romanization/Latinization）の概念と同様に、ある言語を漢字で表現することを指します。
+          <br/><br/>
+          <strong>Hanji</strong>は中国（Hanzi）、日本（Kanji）、韓国（Hanja）の3つの地域における漢字の発音の最大公約数です。このウェブサイトで使用される漢字は、繁体字中国語、簡体字中国語、日本語、韓国語の漢字に限定されず、これらの地域のすべての漢字を網羅しているため、「Hanji」という言葉を作り出し、これらの異なる出所の漢字を総称しています。
+        `,
+        faq2Q: "なぜHanjifyツールを作成したのですか？",
+        faq2A: `
+          大学を卒業したばかりの頃、私は文字と言語の発展に強い興味を持っていました。特に漢字のローマ字化の歴史に興味がありました。当時の逆転の発想の影響で、突然のアイデアが浮かびました：英語を「漢字化」したらどんな効果があるだろうか？
+          <br/><br/>
+          また、漢字文化圏に属さない人々にとって、多くの人が中国語と日本語の文字体系に高度な重複があると考えています。お互いの言語を理解せずに、書面の漢字だけで意味を推測することは可能かどうか考え始めました。そのため、このツールを通じて、漢字は理解できるが英語が分からない人々にも、この推測の楽しさを感じてもらえればと思います。
+          <br/><br/>
+          もちろん、中国と日本が漢字の使用において類似点と相違点の両方を持っているように、「英語の漢字化」も漢字の使用において独特の特徴があります。
+        `,
+        faq3Q: "Hanjifyの設計における原則と考慮事項は何ですか？",
+        faq3A: `
+          <ol>
+            <li><strong>英語の本質を保つ</strong>：英語の漢字化は翻訳ではありません。英語が基礎であり、漢字は表現形式の一つに過ぎません。そのため、中国語や日本語の文法がその構造に影響を与えないようにしています。</li>
+            <li><strong>中立的な歴史的背景</strong>：この「漢字化」が、ある歴史的時点で自然に独立して発展した結果のように見えることを望んでいます。単に現代の中国や日本から来たものではありません。そのため、選択された漢字は中国と日本に限らず、韓国の「漢文教育用基礎漢字」（例：「鷄」）や古字（例：「祘」、「斈斍」）なども含まれています。</li>
+            <li><strong>単語の構築</strong>：部分的に現代の中国語と日本語の用語を参考にしていますが、より多くの場合、英語のネイティブスピーカーが漢字をいくつか理解し、辞書を引いて英単語を転写したらどうなるかを想像しています。</li>
+            <li><strong>オープンな議論</strong>：私は英語のネイティブスピーカーではないため、この構想は完全に正確ではないかもしれません。より良い単語の選択や面白いアイデアがあれば、いつでも私と共有してください。</li>
+            <li><strong>楽しい体験</strong>：このウェブサイトが楽しみをもたらすことを願っています。「漢字化」された英語を友達に送って、意味を推測できるか試してみてください！</li>
+          </ol>
+        `
+      }
+    };
+
+    function changeLanguage(lang) {
+      currentLanguage = lang;
+      document.getElementById("title").textContent = languages[lang].title;
+      document.getElementById("description").textContent = languages[lang].description;
+      document.getElementById("inputText").placeholder = languages[lang].placeholder;
+      document.getElementById("convertButton").textContent = languages[lang].convertButton;
+      document.getElementById("showRubyLabel").textContent = languages[lang].showRubyLabel;
+      document.getElementById("outputTitle").textContent = languages[lang].outputTitle;
+      document.getElementById("copyButton").textContent = languages[lang].copyButton;
+      document.getElementById("faqTitle").textContent = languages[lang].faqTitle;
+      document.getElementById("faq1Q").textContent = languages[lang].faq1Q;
+      document.getElementById("faq1A").innerHTML = languages[lang].faq1A;
+      document.getElementById("faq2Q").textContent = languages[lang].faq2Q;
+      document.getElementById("faq2A").innerHTML = languages[lang].faq2A;
+      document.getElementById("faq3Q").textContent = languages[lang].faq3Q;
+      document.getElementById("faq3A").innerHTML = languages[lang].faq3A;
+
+      // 更新語言按鈕的高亮狀態
+      document.querySelectorAll('.language-buttons button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(`${lang}-btn`).classList.add('active');
+    }
+
+    function convertToHanzi() {
+      const inputTextArea = document.getElementById("inputText");
+      let inputText = inputTextArea.value;
+
+      // 如果輸入框的內容與預設文字相同，則使用預設文字
+      if (inputText === inputTextArea.getAttribute("placeholder")) {
+        inputText = inputTextArea.placeholder;
       }
 
-      document
-        .getElementById("show-ruby")
-        .addEventListener("change", function () {
-          const showRuby = this.checked;
-          const outputHTML = document.getElementById("outputText");
-          const rtElements = outputHTML.getElementsByTagName("rt");
-          for (const rt of rtElements) {
-            if (showRuby) {
-              rt.style.display = "ruby-text";
-            } else {
-              rt.style.display = "none";
+      let outputHTML = "";
+      let lastIsHanji = false;
+
+      const suffixes = ["s", "ing", "ed"];
+      // 將對應表中的詞彙進行替換
+      const lines = inputText.split("\n");
+      for (const line of lines) {
+        const words = line.split(" ");
+        for (const word of words) {
+          let baseWord = word.toLowerCase();
+          if (
+            baseWord.endsWith(",") ||
+            baseWord.endsWith(".") ||
+            baseWord.endsWith("!") ||
+            baseWord.endsWith("?") ||
+            baseWord.endsWith(":") 
+          ) {
+            baseWord = baseWord.slice(0, -1);
+          } else if (
+            baseWord.endsWith(",\"") ||
+            baseWord.endsWith(".\"") ||
+            baseWord.endsWith("!\"") ||
+            baseWord.endsWith("?\"") 
+          ) {
+            baseWord = baseWord.slice(0, -2);
+          } 
+          if (!wordList[baseWord]) {
+            for (const suffix of suffixes) {
+              if (baseWord.endsWith(suffix)) {
+                baseWord = baseWord.slice(0, -suffix.length);
+                break;
+              }
             }
           }
-        });
-    </script>
-  </body>
+          if (wordList[baseWord]) {
+            const baseWordLength = baseWord.length;
+            const displayedPart = word.slice(0, baseWordLength);
+            const remainingPart = word.slice(baseWordLength);
+            outputHTML += `<ruby>${wordList[baseWord]}<rt>${displayedPart}</rt></ruby>${remainingPart}`;
+            lastIsHanji = true;
+          } else {
+            if (lastIsHanji) {
+              outputHTML += ` ${word} `;
+            } else {
+              outputHTML += `${word} `;
+            }
+            lastIsHanji = false;
+          }
+        }
+        outputHTML += "<br/>";
+      }
+
+      // 輸出結果
+      document.getElementById("outputText").innerHTML = outputHTML;
+    }
+
+    function copyOutput() {
+      const outputDiv = document.getElementById("outputText");
+
+      // 創建一個臨時元素來處理文本
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = outputDiv.innerHTML;
+
+      // 除所有的 <rt> 標籤
+      const rtTags = tempDiv.getElementsByTagName('rt');
+      while (rtTags.length > 0) {
+        rtTags[0].parentNode.removeChild(rtTags[0]);
+      }
+
+      // 獲取處理後的文本
+      const textToCopy = tempDiv.innerText.replace(/\n/g, '\n').trim();
+
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        alert(languages[currentLanguage].copySuccess);
+      }).catch(err => {
+        console.error('無法複製文本: ', err);
+        alert(languages[currentLanguage].copyError);
+      });
+    }
+
+    document
+      .getElementById("show-ruby")
+      .addEventListener("change", function () {
+        const showRuby = this.checked;
+        const outputHTML = document.getElementById("outputText");
+        const rtElements = outputHTML.getElementsByTagName("rt");
+        for (const rt of rtElements) {
+          if (showRuby) {
+            rt.style.display = "ruby-text";
+          } else {
+            rt.style.display = "none";
+          }
+        }
+      });
+
+    function toggleAnswer(element) {
+      const answer = element.nextElementSibling;
+      if (answer.style.display === "block") {
+        answer.style.display = "none";
+      } else {
+        answer.style.display = "block";
+      }
+    }
+
+    function getUrlParameter(name) {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      var results = regex.exec(location.search);
+      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    function initializeLanguage() {
+      const langParam = getUrlParameter('lang');
+      if (langParam && languages.hasOwnProperty(langParam)) {
+        changeLanguage(langParam);
+      } else {
+        changeLanguage('en'); // 默認語言
+      }
+    }
+
+    // 頁面加載完成後初始化語言
+    window.onload = initializeLanguage;
+
+    // 新增事件監聽器，處理 textarea 的焦點
+    document.getElementById("inputText").addEventListener("focus", function() {
+      if (this.value === this.getAttribute("placeholder")) {
+        this.value = "";
+        this.style.color = "#333";
+      }
+    });
+
+    document.getElementById("inputText").addEventListener("blur", function() {
+      if (this.value === "") {
+        this.value = this.getAttribute("placeholder");
+        this.style.color = "#999";
+      }
+    });
+
+    // 頁面加載時初始化 textarea 的顏色
+    window.addEventListener("load", function() {
+      const inputTextArea = document.getElementById("inputText");
+      if (inputTextArea.value === inputTextArea.getAttribute("placeholder")) {
+        inputTextArea.style.color = "#999";
+      }
+    });
+  </script>
+</body>
+
 </html>
