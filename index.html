@@ -6,54 +6,98 @@
     <title>英語漢字化工具</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
         line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      h1, h2 {
+        color: #2c3e50;
+      }
+      .container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .description {
+        background-color: #e8f4f8;
+        border-left: 4px solid #3498db;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 0 8px 8px 0;
+      }
+      textarea, #outputText {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+      button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #2980b9;
       }
       .ruby-text {
         font-size: 0.8em;
         color: #666;
       }
       rt {
-        font-family: "Ariel Narrow";
+        font-family: "Arial Narrow", Arial, sans-serif;
         margin-left: 0.25em;
         margin-right: 0.25em;
       }
       #outputText {
-        font-family: "Monaco", "Menlo", "Consolas", monospace,
-          "Microsoft JhengHei", sans-serif;
+        font-family: "Monaco", "Menlo", "Consolas", monospace, "Microsoft JhengHei", sans-serif;
+        background-color: #f9f9f9;
+        min-height: 100px;
+      }
+      .checkbox-wrapper {
+        margin-top: 10px;
       }
     </style>
   </head>
   <body>
-    <h1>英語漢字化工具</h1>
-    <textarea
-      id="inputText"
-      rows="10"
-      cols="80"
-      placeholder="在這裡輸入英文文本..."
-    ></textarea>
-    <br /><br />
-    <button onclick="convertToHanzi()">漢字化</button>
-    <label>
-      <input type="checkbox" id="show-ruby" checked />
-      顯示 ruby 文字
-    </label>
-    <h2>漢字化後的文本：</h2>
-    <div id="outputText"></div>
+    <div class="container">
+      <h1>英語漢字化工具</h1>
+      
+      <div class="description">
+        <p>這個工具可以將英文文本轉換為漢字表示。使用方法：在下方文本框輸入英文，點擊"漢字化"按鈕即可看到轉換結果。您可以選擇是否顯示原文注音。</p>
+      </div>
+
+      <textarea
+        id="inputText"
+        rows="8"
+        placeholder="在這裡輸入英文文本..."
+      ></textarea>
+      <br /><br />
+      <button onclick="convertToHanzi()">漢字化</button>
+      <div class="checkbox-wrapper">
+        <label>
+          <input type="checkbox" id="show-ruby" checked />
+          顯示原文注音
+        </label>
+      </div>
+      <h2>漢字化後的文本：</h2>
+      <div id="outputText"></div>
+    </div>
+
+    <!-- 在 body 結束標籤前加入這行，引入 wordlist.js -->
+    <script src="wordlist.js"></script>
 
     <script>
-      let wordMap = {};
-
-      // 從 JSON 文件讀取替換詞彙對應表
-      fetch("word_list.json")
-        .then((response) => response.json())
-        .then((data) => {
-          wordMap = data;
-        })
-        .catch((error) => {
-          console.error("Error loading wordMap.json:", error);
-        });
-
       function convertToHanzi() {
         const inputText = document.getElementById("inputText").value;
         let outputHTML = "";
@@ -75,7 +119,7 @@
             ) {
               baseWord = baseWord.slice(0, -1);
             }
-            if (!wordMap[baseWord]) {
+            if (!wordList[baseWord]) {
               for (const suffix of suffixes) {
                 if (baseWord.endsWith(suffix)) {
                   baseWord = baseWord.slice(0, -suffix.length);
@@ -83,9 +127,9 @@
                 }
               }
             }
-            if (wordMap[baseWord]) {
+            if (wordList[baseWord]) {
               outputHTML += `<ruby>${
-                wordMap[baseWord]
+                wordList[baseWord]
               }<rt>${baseWord}</rt></ruby>${word.slice(baseWord.length)}`;
               lastIsHanji = true;
             } else {
