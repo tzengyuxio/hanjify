@@ -1,0 +1,2 @@
+# hanjify
+English Hanjifization
