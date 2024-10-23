@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head></head>
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HANJIFY - 英語漢字化工具</title>
@@ -9,12 +9,11 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-9EFB2TQY54"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-
     gtag('config', 'G-9EFB2TQY54');
   </script>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
   <style>
     body {
       font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -58,11 +57,11 @@
       color: #333; /* 當 textarea 獲得焦點時，文字顏色變為正常 */
     }
 
-    #outputText, .output-wrapper {
+    #outputText, #previewImage, .output-wrapper {
       font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Heiti TC", "Apple LiGothic", sans-serif;
       background-color: #f9f9f9;
       min-height: 100px;
-      padding: 10px;
+      padding: 24px 10px 10px 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 16px;
@@ -162,8 +161,7 @@
     #screenshotPreview {
       max-width: 100%;
       margin-top: 20px;
-      display: none;
-      /* display: block; */
+      display: block;
       margin: 0 auto;
     }
 
@@ -190,12 +188,6 @@
       text-decoration: none;
       border-radius: 4px;
       text-align: center;
-    }
-
-    #outputText, #outputText * {
-      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Heiti TC", "Apple LiGothic", sans-serif;
-      line-height: 1.6;
-      letter-spacing: normal;
     }
   </style>
 </head>
@@ -266,7 +258,7 @@
   </div>
 
   <div class="footer">
-    <p>made by <a href="https://twitter.com/tzengyuxio" target="_blank" id="authorTwitter">@tzengyuxio</a></p>
+    <p>made by <a href="https://twitter.com/tzengyuxio" target="_blank" id="authorTwitter">@tzengyuxio</a>, any suggestions are welcome.</p>
   </div>
   </div>
 
@@ -312,8 +304,7 @@
           </ol>
         `,
         screenshotButton: "Screenshot",
-        downloadScreenshot: "Download Screenshot",
-        screenshotTitle: "Screenshot Preview",
+        screenshotTitle: "Screenshot Preview (right click to download)",
       },
       zh_tw: {
         title: "英語漢字化工具",
@@ -351,8 +342,7 @@
           </ol>
         `,
         screenshotButton: "截圖",
-        downloadScreenshot: "下載截圖",
-        screenshotTitle: "截圖預覽",
+        screenshotTitle: "截圖預覽（右鍵下載）",
       },
       zh_cn: {
         title: "英语汉字化工具",
@@ -390,8 +380,7 @@
           </ol>
         `,
         screenshotButton: "截图",
-        downloadScreenshot: "下载截图",
-        screenshotTitle: "截图预览",
+        screenshotTitle: "截图预览（右键下载）",
       },
       ja: {
         title: "英語漢字化ツール",
@@ -429,8 +418,7 @@
           </ol>
         `,
         screenshotButton: "スクリーンショット",
-        downloadScreenshot: "スクリーンショットをダウンロード",
-        screenshotTitle: "スクリーンショットプレビュー",
+        screenshotTitle: "スクリーンショットプレビュー（右クリックでダウンロード）",
       }
     };
 
@@ -461,6 +449,10 @@
     }
 
     function convertToHanzi() {
+      // 隱藏截圖預覽區域
+      const screenshotContainer = document.getElementById("screenshotContainer");
+      screenshotContainer.style.display = "none";
+
       const inputTextArea = document.getElementById("inputText");
       let inputText = inputTextArea.value;
 
@@ -637,57 +629,73 @@
       // 創建一個新的 div 來包裝 outputDiv 的內容
       const wrapperDiv = document.createElement('div');
       wrapperDiv.innerHTML = outputDiv.innerHTML;
+      wrapperDiv.id = "previewImage";
       wrapperDiv.className = "output-wrapper";
-      wrapperDiv.style.padding = '20px';
       wrapperDiv.style.backgroundColor = 'white';
-      wrapperDiv.style.width = outputDiv.offsetWidth + 'px';
+      console.log("outputDiv.clientWidth: ", outputDiv.clientWidth);
+      wrapperDiv.style.width = (outputDiv.clientWidth - 20) + 'px';
       wrapperDiv.style.fontFamily = getComputedStyle(outputDiv).fontFamily;
       wrapperDiv.style.fontSize = getComputedStyle(outputDiv).fontSize;
       wrapperDiv.style.lineHeight = getComputedStyle(outputDiv).lineHeight;
       document.body.appendChild(wrapperDiv);
 
-      html2canvas(wrapperDiv, {
-        backgroundColor: null,
-        scale: 2, // 提高解析度
-        useCORS: true,
-        onclone: function(clonedDoc) {
-          const clonedWrapper = clonedDoc.body.lastChild;
-          clonedWrapper.style.width = outputDiv.offsetWidth + 'px';
-        }
-      }).then(canvas => {
-        // 添加浮水印
-        const ctx = canvas.getContext('2d');
-        ctx.font = 'bold 24px Arial'; // 增加字體大小和粗細
-        ctx.fillStyle = 'rgba(150, 150, 150, 0.7)'; // 增加不透明度
-        ctx.textAlign = 'right';
-        ctx.fillText('created by hanzify', canvas.width - 200, canvas.height - 80);
-        ctx.fillText('hanzify.tzengyuxio.me', canvas.width - 200, canvas.height - 20);
-        console.log("Screenshot generated", canvas.width, canvas.height);
+      domtoimage.toPng(wrapperDiv, {
+        height: wrapperDiv.offsetHeight + 20, // for watermark
+      })
+      .then(function (dataUrl) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
 
-        screenshotPreview.src = canvas.toDataURL();
-        screenshotContainer.style.display = "block";
-        screenshotTitle.textContent = languages[currentLanguage].screenshotTitle;
+          // 添加浮水印
+          ctx.fillStyle = 'rgba(0, 0, 128, 0.8)';
+          ctx.fillRect(0, canvas.height - 24, canvas.width, 24);
+          ctx.font = '16px "Monaco", "Consolas", "Menlo", monospace';
+          ctx.fillStyle = 'rgba(250, 250, 250, .8)';
+          ctx.textAlign = 'right';
+          ctx.fillText('made by https://HANJIFY.tzengyuxio.me', canvas.width - 10, canvas.height - 6);
 
-        // 創建下載按鈕
-        const downloadButton = document.createElement("a");
-        downloadButton.href = canvas.toDataURL("image/png");
-        downloadButton.download = "hanjify_screenshot.png";
-        downloadButton.textContent = languages[currentLanguage].downloadScreenshot;
-        downloadButton.id = "downloadButton";
+          const finalDataUrl = canvas.toDataURL('image/png');
 
-        // 如果已經存在舊的下載按鈕，則移除它
-        const oldDownloadButton = document.getElementById("downloadButton");
-        if (oldDownloadButton) {
-          oldDownloadButton.remove();
-        }
+          screenshotPreview.onload = function() {
+            console.log("Screenshot preview loaded");
+            screenshotContainer.style.display = "block"; // 顯示截圖預覽區域
+          };
+          screenshotPreview.onerror = function() {
+            console.error("Failed to load screenshot preview");
+          };
+          screenshotPreview.src = finalDataUrl;
+          screenshotTitle.textContent = languages[currentLanguage].screenshotTitle;
 
-        // 添加新的下載按鈕
-        screenshotContainer.appendChild(downloadButton);
+          /**
+          // 創建下載按鈕
+          const downloadButton = document.createElement("a");
+          downloadButton.href = finalDataUrl;
+          downloadButton.download = "hanjify_screenshot.png";
+          downloadButton.textContent = languages[currentLanguage].downloadScreenshot;
+          downloadButton.id = "downloadButton";
+
+          // 如果已經存在舊的下載按鈕，則移除它
+          const oldDownloadButton = document.getElementById("downloadButton");
+          if (oldDownloadButton) {
+            oldDownloadButton.remove();
+          }
+
+          // 添加新的下載按鈕
+          screenshotContainer.appendChild(downloadButton);
+           **/
+        };
+        img.src = dataUrl;
 
         // 移除臨時創建的 wrapper div
         document.body.removeChild(wrapperDiv);
-      }).catch(error => {
-        console.error("Screenshot generation failed:", error);
+      })
+      .catch(function (error) {
+        console.error('Screenshot generation failed:', error);
         alert("Failed to generate screenshot. Please try again.");
       });
     }
