@@ -26,7 +26,7 @@ def convert_csv_to_js(input_file, output_file):
     # Save to JavaScript file
     with open(output_file, "w", encoding='utf-8') as jsfile:
         jsfile.write("const wordList = ")
-        json.dump(data, jsfile, ensure_ascii=False)
+        json.dump(data, jsfile, ensure_ascii=False, indent=2)
         jsfile.write(";")
 
     print(f"Total words: {counter}")

@@ -14,6 +14,7 @@
 
     gtag('config', 'G-9EFB2TQY54');
   </script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     body {
       font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -56,7 +57,8 @@
     textarea:focus {
       color: #333; /* 當 textarea 獲得焦點時，文字顏色變為正常 */
     }
-    #outputText {
+
+    #outputText, .output-wrapper {
       font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Heiti TC", "Apple LiGothic", sans-serif;
       background-color: #f9f9f9;
       min-height: 100px;
@@ -65,11 +67,17 @@
       border-radius: 4px;
       font-size: 16px;
     }
+
+    ruby {
+      ruby-align: center;
+    }
+
     rt {
       font-family: "Arial Narrow", Arial, sans-serif;
       font-size: 1em;
       color: #666;
       margin: 0 0.25em;
+      display: ruby-text;
     }
 
     button {
@@ -147,6 +155,48 @@
       margin-top: 10px;
       padding-left: 20px;
     }
+
+    #screenshotButton {
+      margin-left: 10px;
+    }
+    #screenshotPreview {
+      max-width: 100%;
+      margin-top: 20px;
+      display: none;
+      /* display: block; */
+      margin: 0 auto;
+    }
+
+    .screenshot-container {
+      border: 2px solid #3498db;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 20px;
+      background-color: #f8f9fa;
+    }
+
+    .screenshot-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    #downloadButton {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    #outputText, #outputText * {
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Heiti TC", "Apple LiGothic", sans-serif;
+      line-height: 1.6;
+      letter-spacing: normal;
+    }
   </style>
 </head>
 
@@ -172,6 +222,7 @@
   <div class="button-group">
     <button onclick="convertToHanzi()" id="convertButton">漢字化</button>
     <button onclick="copyOutput()" id="copyButton">複製結果</button>
+    <button onclick="takeScreenshot()" id="screenshotButton">截圖</button>
   </div>
   <div class="checkbox-wrapper">
     <label>
@@ -181,6 +232,10 @@
   </div>
   <h2 id="outputTitle">漢字化後的文本</h2>
   <div id="outputText"></div>
+  <div id="screenshotContainer" class="screenshot-container" style="display: none;">
+    <div id="screenshotTitle" class="screenshot-title"></div>
+    <img id="screenshotPreview" alt="Screenshot preview">
+  </div>
 
   <div class="faq">
     <h2 id="faqTitle">常見問題</h2>
@@ -255,7 +310,10 @@
             <li><strong>Open for discussion</strong>: As I'm not a native English speaker, this conception might not be entirely accurate. If you have better word choices or interesting ideas, please feel free to share them with me anytime.</li>
             <li><strong>Fun experience</strong>: I hope this website can bring some enjoyment. Try sending "Hanjified" English to your friends and see if they can guess the meaning!</li>
           </ol>
-        `
+        `,
+        screenshotButton: "Screenshot",
+        downloadScreenshot: "Download Screenshot",
+        screenshotTitle: "Screenshot Preview",
       },
       zh_tw: {
         title: "英語漢字化工具",
@@ -291,7 +349,10 @@
             <li><strong>開放討論</strong>：由於我並非英語母語者，這種設想可能並不夠精確。如果有更好的詞語選擇或有趣的想法，歡迎隨時與我分享。</li>
             <li><strong>樂趣體驗</strong>：希望這個網站能帶來一些樂趣。可以將「漢字化」後的英文發給朋友，看看他們是否能猜出其中的意思！</li>
           </ol>
-        `
+        `,
+        screenshotButton: "截圖",
+        downloadScreenshot: "下載截圖",
+        screenshotTitle: "截圖預覽",
       },
       zh_cn: {
         title: "英语汉字化工具",
@@ -327,7 +388,10 @@
             <li><strong>开放讨论</strong>：由于我并非英语母语者，这种设想可能并不够精确。如果有更好的词语选择或有趣的想法，欢迎随时与我分享。</li>
             <li><strong>乐趣体验</strong>：希望这个网站能带来一些乐趣。可以将"汉字化"后的英文发给朋友，看看他们是否能猜出其中的意思！</li>
           </ol>
-        `
+        `,
+        screenshotButton: "截图",
+        downloadScreenshot: "下载截图",
+        screenshotTitle: "截图预览",
       },
       ja: {
         title: "英語漢字化ツール",
@@ -363,7 +427,10 @@
             <li><strong>オープンな議論</strong>：私は英語のネイティブスピーカーではないため、この構想は完全に正確ではないかもしれません。より良い単語の選択や面白いアイデアがあれば、いつでも私と共有してください。</li>
             <li><strong>楽しい体験</strong>：このウェブサイトが楽しみをもたらすことを願っています。「漢字化」された英語を友達に送って、意味を推測できるか試してみてください！</li>
           </ol>
-        `
+        `,
+        screenshotButton: "スクリーンショット",
+        downloadScreenshot: "スクリーンショットをダウンロード",
+        screenshotTitle: "スクリーンショットプレビュー",
       }
     };
 
@@ -383,6 +450,8 @@
       document.getElementById("faq2A").innerHTML = languages[lang].faq2A;
       document.getElementById("faq3Q").textContent = languages[lang].faq3Q;
       document.getElementById("faq3A").innerHTML = languages[lang].faq3A;
+      document.getElementById("screenshotButton").textContent = languages[lang].screenshotButton;
+      document.getElementById("screenshotTitle").textContent = languages[lang].screenshotTitle;
 
       // 更新語言按鈕的高亮狀態
       document.querySelectorAll('.language-buttons button').forEach(btn => {
@@ -552,6 +621,76 @@
         inputTextArea.style.color = "#999";
       }
     });
+
+    function takeScreenshot() {
+      const outputDiv = document.getElementById("outputText");
+      const screenshotContainer = document.getElementById("screenshotContainer");
+      const screenshotTitle = document.getElementById("screenshotTitle");
+      const screenshotPreview = document.getElementById("screenshotPreview");
+
+      if (!outputDiv || !screenshotContainer || !screenshotTitle || !screenshotPreview) {
+        console.error("Required elements not found");
+        alert("Screenshot function is not available at the moment.");
+        return;
+      }
+
+      // 創建一個新的 div 來包裝 outputDiv 的內容
+      const wrapperDiv = document.createElement('div');
+      wrapperDiv.innerHTML = outputDiv.innerHTML;
+      wrapperDiv.className = "output-wrapper";
+      wrapperDiv.style.padding = '20px';
+      wrapperDiv.style.backgroundColor = 'white';
+      wrapperDiv.style.width = outputDiv.offsetWidth + 'px';
+      wrapperDiv.style.fontFamily = getComputedStyle(outputDiv).fontFamily;
+      wrapperDiv.style.fontSize = getComputedStyle(outputDiv).fontSize;
+      wrapperDiv.style.lineHeight = getComputedStyle(outputDiv).lineHeight;
+      document.body.appendChild(wrapperDiv);
+
+      html2canvas(wrapperDiv, {
+        backgroundColor: null,
+        scale: 2, // 提高解析度
+        useCORS: true,
+        onclone: function(clonedDoc) {
+          const clonedWrapper = clonedDoc.body.lastChild;
+          clonedWrapper.style.width = outputDiv.offsetWidth + 'px';
+        }
+      }).then(canvas => {
+        // 添加浮水印
+        const ctx = canvas.getContext('2d');
+        ctx.font = 'bold 24px Arial'; // 增加字體大小和粗細
+        ctx.fillStyle = 'rgba(150, 150, 150, 0.7)'; // 增加不透明度
+        ctx.textAlign = 'right';
+        ctx.fillText('created by hanzify', canvas.width - 200, canvas.height - 80);
+        ctx.fillText('hanzify.tzengyuxio.me', canvas.width - 200, canvas.height - 20);
+        console.log("Screenshot generated", canvas.width, canvas.height);
+
+        screenshotPreview.src = canvas.toDataURL();
+        screenshotContainer.style.display = "block";
+        screenshotTitle.textContent = languages[currentLanguage].screenshotTitle;
+
+        // 創建下載按鈕
+        const downloadButton = document.createElement("a");
+        downloadButton.href = canvas.toDataURL("image/png");
+        downloadButton.download = "hanjify_screenshot.png";
+        downloadButton.textContent = languages[currentLanguage].downloadScreenshot;
+        downloadButton.id = "downloadButton";
+
+        // 如果已經存在舊的下載按鈕，則移除它
+        const oldDownloadButton = document.getElementById("downloadButton");
+        if (oldDownloadButton) {
+          oldDownloadButton.remove();
+        }
+
+        // 添加新的下載按鈕
+        screenshotContainer.appendChild(downloadButton);
+
+        // 移除臨時創建的 wrapper div
+        document.body.removeChild(wrapperDiv);
+      }).catch(error => {
+        console.error("Screenshot generation failed:", error);
+        alert("Failed to generate screenshot. Please try again.");
+      });
+    }
   </script>
 </body>
 
