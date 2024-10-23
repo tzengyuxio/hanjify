@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+<head></head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>英語漢字化工具</title>
+  <title>HANJIFY - 英語漢字化工具</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9EFB2TQY54"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-9EFB2TQY54');
+  </script>
   <style>
     body {
       font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -295,7 +304,7 @@
         copySuccess: "文本已拷贝到剪贴板！",
         copyError: "拷贝失败，请手动拷贝。",
         faqTitle: "常见问题",
-        faq1Q: "> 什么是 \"Hanjify\"?",
+        faq1Q: "什么是 \"Hanjify\"?",
         faq1A: `
           <strong>Hanjify</strong> 是将 "Hanji" 动词化的结果。类似于"拉丁化"（Romanization/Latinization）的概念，它指的是将一种语言用汉字来表示。
           <br/><br/>
@@ -424,6 +433,9 @@
                 break;
               }
             }
+          }
+          if (word === "I") {
+            baseWord = "I";
           }
           if (wordList[baseWord]) {
             const baseWordLength = baseWord.length;
