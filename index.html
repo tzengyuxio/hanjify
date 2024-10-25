@@ -464,7 +464,7 @@
       let outputHTML = "";
       let lastIsHanji = false;
 
-      const suffixes = ["s", "ing", "ed"];
+      const suffixes = ["s", "ing", "ed", "es"];
       // 將對應表中的詞彙進行替換
       const lines = inputText.split("\n");
       for (const line of lines) {
@@ -474,6 +474,7 @@
           if (
             baseWord.endsWith(",") ||
             baseWord.endsWith(".") ||
+            baseWord.endsWith(";") ||
             baseWord.endsWith("!") ||
             baseWord.endsWith("?") ||
             baseWord.endsWith(":") 
@@ -482,6 +483,7 @@
           } else if (
             baseWord.endsWith(",\"") ||
             baseWord.endsWith(".\"") ||
+            baseWord.endsWith(";\"") ||
             baseWord.endsWith("!\"") ||
             baseWord.endsWith("?\"") 
           ) {
