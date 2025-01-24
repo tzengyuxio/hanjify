@@ -491,12 +491,18 @@
         for (const word of words) {
           let baseWord = word.toLowerCase();
           if (
+            baseWord.startsWith("(")
+          ) {
+            baseWord = baseWord.slice(1);
+          }
+          if (
             baseWord.endsWith(",") ||
             baseWord.endsWith(".") ||
             baseWord.endsWith(";") ||
             baseWord.endsWith("!") ||
             baseWord.endsWith("?") ||
-            baseWord.endsWith(":") 
+            baseWord.endsWith(":") ||
+            baseWord.endsWith(")")
           ) {
             baseWord = baseWord.slice(0, -1);
           } else if (
@@ -504,7 +510,8 @@
             baseWord.endsWith(".\"") ||
             baseWord.endsWith(";\"") ||
             baseWord.endsWith("!\"") ||
-            baseWord.endsWith("?\"") 
+            baseWord.endsWith("?\"") ||
+            baseWord.endsWith(")\"")
           ) {
             baseWord = baseWord.slice(0, -2);
           } 
