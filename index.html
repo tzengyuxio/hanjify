@@ -85,6 +85,10 @@
       display: ruby-text;
     }
 
+    .hide-ruby rt {
+      display: none !important;
+    }
+
     button {
       background-color: #3498db;
       color: white;
@@ -550,6 +554,15 @@
 
       // 輸出結果
       document.getElementById("outputText").innerHTML = outputHTML;
+
+      // 套用 checkbox 狀態到新產生的 rt 元素
+      const showRuby = document.getElementById("show-ruby").checked;
+      const outputDiv = document.getElementById("outputText");
+      if (showRuby) {
+        outputDiv.classList.remove("hide-ruby");
+      } else {
+        outputDiv.classList.add("hide-ruby");
+      }
     }
 
     function copyOutput() {
@@ -579,15 +592,11 @@
     document
       .getElementById("show-ruby")
       .addEventListener("change", function () {
-        const showRuby = this.checked;
-        const outputHTML = document.getElementById("outputText");
-        const rtElements = outputHTML.getElementsByTagName("rt");
-        for (const rt of rtElements) {
-          if (showRuby) {
-            rt.style.display = "ruby-text";
-          } else {
-            rt.style.display = "none";
-          }
+        const outputDiv = document.getElementById("outputText");
+        if (this.checked) {
+          outputDiv.classList.remove("hide-ruby");
+        } else {
+          outputDiv.classList.add("hide-ruby");
         }
       });
 
