@@ -31,6 +31,10 @@
 3. 若查無結果，會去除常見字尾（s、ed、ing 等）後重試
 4. 無法對應的單字維持原樣顯示
 
+## 轉換規範
+
+轉換規則定義於 [`docs/spec.md`](docs/spec.md)——本工具的 single source of truth，涵蓋功能詞對照、形態學規則、字形採用、衝突避歧與邊界情境。本網頁工具與 [Claude Code `hanjify` skill](https://github.com/tzengyuxio/skills/tree/main/hanjify) 同樣依此規範實作。
+
 ## 本地執行
 
 ```bash
