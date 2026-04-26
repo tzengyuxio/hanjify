@@ -21,299 +21,567 @@
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
   <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --surface-2: #f9fafb;
+      --border: #e5e7eb;
+      --border-strong: #d1d5db;
+      --text: #1f2937;
+      --text-muted: #6b7280;
+      --primary: #3498db;
+      --primary-hover: #2980b9;
+      --primary-soft: #eaf4fb;
+      --accent: #2c3e50;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       font-family: 'Helvetica Neue', Arial, sans-serif;
       line-height: 1.6;
-      color: #333;
-      max-width: 800px;
+      color: var(--text);
+      margin: 0;
+      padding: 24px 16px 48px;
+      background-color: var(--bg);
+    }
+
+    .page {
+      max-width: 1180px;
       margin: 0 auto;
-      padding: 20px;
-      background-color: #f5f5f5;
     }
 
-    h1,
-    h2 {
-      color: #2c3e50;
-    }
-
-    .container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .description {
-      background-color: #e8f4f8;
-      border-left: 4px solid #3498db;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 0 8px 8px 0;
-    }
-
-    textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 16px;
-      color: #999; /* 預設文字顏色設為灰色 */
-    }
-    textarea:focus {
-      color: #333; /* 當 textarea 獲得焦點時，文字顏色變為正常 */
-    }
-
-    #outputText, #previewImage, .output-wrapper {
-      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Heiti TC", "Apple LiGothic", sans-serif;
-      background-color: #f9f9f9;
-      min-height: 100px;
-      padding: 24px 10px 10px 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-
-    ruby {
-      ruby-align: center;
-    }
-
-    rt {
-      font-family: "Arial Narrow", Arial, sans-serif;
-      font-size: 1em;
-      color: #666;
-      margin: 0 0.25em;
-      display: ruby-text;
-    }
-
-    .hide-ruby rt {
-      display: none !important;
-    }
-
-    button {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background-color 0.3s;
-      margin-right: 10px;
-    }
-
-    button:hover {
-      background-color: #2980b9;
-    }
-
-    .ruby-text {
-      font-size: 0.8em;
-      color: #666;
-    }
-
-    .checkbox-wrapper {
-      margin-top: 10px;
-    }
-
-    .example-buttons {
-      margin-top: 10px;
+    /* Header */
+    .header {
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 4px 4px 20px;
       flex-wrap: wrap;
     }
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .brand-mark {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 22px;
+      letter-spacing: 0.22em;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-    .example-buttons span {
-      color: #666;
+    /* Segmented language control */
+    .lang-seg {
+      display: inline-flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+    .lang-seg button {
+      appearance: none;
+      background: transparent;
+      border: 0;
+      margin: 0;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s;
+    }
+    .lang-seg button:hover { color: var(--text); }
+    .lang-seg button.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .gh-link {
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: background-color 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+    .gh-link:hover { background: var(--surface-2); color: var(--text); }
+
+    /* Description */
+    .intro {
+      background: var(--primary-soft);
+      border-left: 4px solid var(--primary);
+      padding: 14px 18px;
+      margin: 0 0 20px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      color: var(--text);
       font-size: 14px;
     }
 
-    .example-btn {
-      background-color: #95a5a6;
-      padding: 5px 12px;
-      font-size: 13px;
+    /* Two-column workspace */
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 960px) {
+      .workspace { grid-template-columns: 1fr 1fr; }
     }
 
-    .example-btn:hover {
-      background-color: #7f8c8d;
+    .pane {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
     }
-
-    .language-buttons {
-      margin-bottom: 20px;
-    }
-
-    .button-group {
-      margin-top: 10px;
+    .pane-head {
       display: flex;
       align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .pane-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .pane-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+    .pane-foot {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
-    #copyButton {
-      margin-left: 10px;
+    /* Examples chips */
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
     }
-
-    .language-buttons button {
-      margin-right: 10px;
+    .examples-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-right: 4px;
     }
-
-    .language-buttons button.active {
-      background-color: #2c3e50;
-    }
-
-    .footer {
-      margin-top: 30px;
-      text-align: center;
-      font-size: 0.9em;
-    }
-
-    .faq {
-      background-color: #e8f4f8;
-      border-left: 4px solid #3498db;
-      padding: 15px;
-      margin-top: 30px;
-      border-radius: 0 8px 8px 0;
-    }
-
-    .faq-item {
-      margin-bottom: 15px;
-    }
-
-    .faq-question {
+    .chip {
+      appearance: none;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 11px;
+      font-size: 12px;
       cursor: pointer;
-      font-weight: bold;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .chip:hover {
+      background: var(--surface-2);
+      border-color: var(--border-strong);
+      color: var(--accent);
     }
 
-    .faq-answer {
-      display: none;
-      margin-top: 10px;
-      padding-left: 20px;
+    /* Textarea */
+    textarea {
+      width: 100%;
+      min-height: 240px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      resize: vertical;
+      background: var(--surface);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.18);
+    }
+    textarea::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+    /* Buttons */
+    .btn {
+      appearance: none;
+      background: var(--primary);
+      color: #fff;
+      border: 0;
+      padding: 9px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: background-color 0.15s, transform 0.05s, box-shadow 0.15s;
+      line-height: 1.2;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn:active { transform: translateY(1px); }
+    .btn-cta {
+      padding: 11px 22px;
+      font-size: 15px;
+      box-shadow: 0 2px 6px rgba(52, 152, 219, 0.25);
+    }
+    .btn-cta:hover { box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); }
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover {
+      background: var(--surface-2);
+      color: var(--text);
+      border-color: var(--border-strong);
     }
 
-    #screenshotButton {
-      margin-left: 10px;
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+    .toggle input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .toggle .switch {
+      position: relative;
+      width: 32px;
+      height: 18px;
+      background: var(--border-strong);
+      border-radius: 999px;
+      transition: background-color 0.15s;
+      flex-shrink: 0;
+    }
+    .toggle .switch::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.15s;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    .toggle input:checked + .switch { background: var(--primary); }
+    .toggle input:checked + .switch::after { transform: translateX(14px); }
+
+    /* Output area */
+    .output {
+      font-family: "Noto Serif TC", "Source Han Serif TC", "PingFang TC", "Microsoft JhengHei", "Heiti TC", serif;
+      background: var(--surface);
+      min-height: 240px;
+      padding: 18px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 19px;
+      line-height: 2.1;
+      color: var(--text);
+      overflow-wrap: break-word;
+    }
+    .output:empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 14px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+    }
+    ruby { ruby-align: center; }
+    rt {
+      font-family: "Arial Narrow", Arial, sans-serif;
+      font-size: 0.55em;
+      color: var(--text-muted);
+      margin: 0 0.25em;
+      display: ruby-text;
+      font-weight: 400;
+    }
+    .hide-ruby rt { display: none !important; }
+
+    /* Screenshot preview */
+    #screenshotContainer {
+      margin-top: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    #screenshotTitle {
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--accent);
+      font-size: 14px;
     }
     #screenshotPreview {
       max-width: 100%;
-      margin-top: 20px;
       display: block;
       margin: 0 auto;
+      border-radius: var(--radius-sm);
     }
 
-    .screenshot-container {
-      border: 2px solid #3498db;
-      border-radius: 8px;
-      padding: 10px;
-      margin-top: 20px;
-      background-color: #f8f9fa;
+    /* FAQ */
+    .faq {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-top: 28px;
+      box-shadow: var(--shadow-sm);
     }
-
-    .screenshot-title {
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #2c3e50;
+    .faq h2 {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 600;
     }
-
-    #downloadButton {
-      display: block;
-      margin: 10px auto;
-      padding: 10px 20px;
-      background-color: #3498db;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
+    .faq-item {
+      border-top: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .faq-item:first-of-type {
+      border-top: 0;
+      padding-top: 6px;
+    }
+    .faq-question {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .faq-question::before {
+      content: "+";
+      display: inline-block;
+      width: 16px;
       text-align: center;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 16px;
     }
+    .faq-item.open .faq-question::before { content: "−"; }
+    .faq-answer {
+      display: none;
+      margin-top: 10px;
+      padding-left: 26px;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .faq-item.open .faq-answer { display: block; }
+    .faq-answer ol { padding-left: 20px; margin: 6px 0; }
+    .faq-answer li { margin-bottom: 6px; }
 
-    .github-ribbon {
-      position: absolute;
-      top: 0;
-      right: 0;
-      border: 0;
+    /* Footer */
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .footer a:hover { text-decoration: underline; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 14px;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 1000;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .toast.error { background: #c0392b; }
+
+    @media (max-width: 600px) {
+      body { padding: 16px 12px 36px; }
+      .header { padding-bottom: 12px; }
+      .brand h1 { font-size: 18px; }
+      .brand-mark { font-size: 18px; letter-spacing: 0.18em; }
+      .lang-seg button { padding: 5px 10px; font-size: 12px; }
+      .pane-head { padding: 10px 14px; }
+      .examples-label { display: none; }
+      textarea { min-height: 180px; font-size: 14px; }
+      .output { font-size: 17px; min-height: 180px; padding: 14px 16px; }
+      .faq { padding: 18px 18px; }
     }
   </style>
 </head>
 
 <body>
-  <!-- 替換原來的 GitHub 連結為 ribbon -->
-  <a href="https://github.com/tzengyuxio/hanjify" target="_blank" class="github-ribbon">
-    <img width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png?resize=149%2C149" 
-    alt="Fork me on GitHub" style="position: absolute; top: 0; right: 0; border: 0;">
-  </a>
+  <div class="page">
+    <header class="header">
+      <div class="brand">
+        <span class="brand-mark">HANJIFY</span>
+        <h1 id="title">英語漢字化工具</h1>
+      </div>
+      <div class="header-actions">
+        <div class="lang-seg" aria-label="Interface language">
+          <button onclick="changeLanguage('en')" id="en-btn">English</button>
+          <button onclick="changeLanguage('zh_tw')" id="zh_tw-btn">繁體中文</button>
+          <button onclick="changeLanguage('zh_cn')" id="zh_cn-btn">简体中文</button>
+          <button onclick="changeLanguage('ja')" id="ja-btn">日本語</button>
+        </div>
+        <a href="https://github.com/tzengyuxio/hanjify" target="_blank" rel="noopener" class="gh-link" aria-label="GitHub repository">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.5 5.74.5 12.04c0 5.1 3.29 9.42 7.86 10.95.58.11.79-.25.79-.56 0-.27-.01-1-.02-1.96-3.2.7-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.18a10.97 10.97 0 0 1 5.76 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14 0 1.55-.01 2.8-.01 3.18 0 .31.21.68.8.56 4.57-1.53 7.85-5.85 7.85-10.95C23.5 5.74 18.27.5 12 .5Z"/></svg>
+        </a>
+      </div>
+    </header>
 
-  <div class="container">
-    <h1 id="title">英語漢字化工具</h1>
+    <p class="intro" id="description">這個工具可以將英文文本轉換為漢字表示。使用方法：在下方文本框輸入英文，點擊「漢字化」按鈕即可看到轉換結果。您可以選擇是否顯示原文注音。</p>
 
-    <div class="language-buttons">
-      <button onclick="changeLanguage('en')" id="en-btn">English</button>
-      <button onclick="changeLanguage('zh_tw')" id="zh_tw-btn">繁體中文</button>
-      <button onclick="changeLanguage('zh_cn')" id="zh_cn-btn">简体中文</button>
-      <button onclick="changeLanguage('ja')" id="ja-btn">日本語</button>
+    <main class="workspace">
+      <section class="pane">
+        <div class="pane-head">
+          <h2 class="pane-title">English</h2>
+          <div class="examples">
+            <span class="examples-label" id="exampleLabel">範例：</span>
+            <button onclick="fillExample(1)" class="chip" id="example1Btn">祖父的回憶</button>
+            <button onclick="fillExample(2)" class="chip" id="example2Btn">小王子</button>
+            <button onclick="fillExample(3)" class="chip" id="example3Btn">日常對話</button>
+            <button onclick="fillExample(4)" class="chip" id="example4Btn">科技新聞</button>
+          </div>
+        </div>
+        <div class="pane-body">
+          <textarea id="inputText" rows="8"
+            placeholder="在這裡輸入英文文本...">When I was young, my grandfather and I often went to the park. "Which tree is the oldest?" he would ask. I never knew the answer. He smiled and said, "All of them are old, like me." Now I think of him every day, and I wish I had asked him more.</textarea>
+        </div>
+        <div class="pane-foot">
+          <button onclick="convertToHanzi()" id="convertButton" class="btn btn-cta">漢字化 →</button>
+        </div>
+      </section>
+
+      <section class="pane">
+        <div class="pane-head">
+          <h2 class="pane-title" id="outputTitle">漢字化後的文本</h2>
+          <label class="toggle">
+            <input type="checkbox" id="show-ruby" checked />
+            <span class="switch"></span>
+            <span id="showRubyLabel">顯示原文注音</span>
+          </label>
+        </div>
+        <div class="pane-body">
+          <div id="outputText" class="output" data-placeholder="點擊「漢字化」按鈕，結果會顯示在這裡。"></div>
+        </div>
+        <div class="pane-foot">
+          <button onclick="copyOutput()" id="copyButton" class="btn btn-ghost">複製結果</button>
+          <button onclick="takeScreenshot()" id="screenshotButton" class="btn btn-ghost">截圖</button>
+        </div>
+      </section>
+    </main>
+
+    <div id="screenshotContainer" style="display: none;">
+      <div id="screenshotTitle"></div>
+      <img id="screenshotPreview" alt="Screenshot preview">
+    </div>
+
+    <section class="faq">
+      <h2 id="faqTitle">常見問題</h2>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleAnswer(this)">
+          <span id="faq1Q">這個工具是如何運作的？</span>
+        </div>
+        <div class="faq-answer">
+          <span id="faq1A">本工具使用預先定義的英文單詞到漢字的映射表來進行轉換。它會將輸入的英文文本分解成單詞，然後查找每個單詞的對應漢字。</span>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleAnswer(this)">
+          <span id="faq2Q">為什麼有些單詞沒有被轉換？</span>
+        </div>
+        <div class="faq-answer">
+          <span id="faq2A">如果某個單詞在我們的映射表中沒有對應的漢字，它將保持原樣。這通常發生在專有名詞、技術術語或不常用的詞彙上。</span>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleAnswer(this)">
+          <span id="faq3Q">我可以貢獻新的單詞映射嗎？</span>
+        </div>
+        <div class="faq-answer">
+          <span id="faq3A">目前我們沒有開放用戶直接貢獻新的單詞映射。但如果您有建議，可以通過 Twitter 聯繫作者。</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <p>made by <a href="https://twitter.com/tzengyuxio" target="_blank" id="authorTwitter">@tzengyuxio</a>, any suggestions are welcome.</p>
     </div>
   </div>
 
-  <div class="description">
-    <p id="description">這個工具可以將英文文本轉換為漢字表示。使用方法：在下方文本框輸入英文，點擊"漢字化"按鈕即可看到轉換結果。您可以選擇是否顯示原文注音。</p>
-  </div>
-
-  <textarea id="inputText" rows="8"
-    placeholder="在這裡輸入英文文本...">When I was young, my grandfather and I often went to the park. "Which tree is the oldest?" he would ask. I never knew the answer. He smiled and said, "All of them are old, like me." Now I think of him every day, and I wish I had asked him more.</textarea>
-  <div class="example-buttons">
-    <span id="exampleLabel">範例：</span>
-    <button onclick="fillExample(1)" class="example-btn" id="example1Btn">祖父的回憶</button>
-    <button onclick="fillExample(2)" class="example-btn" id="example2Btn">小王子</button>
-    <button onclick="fillExample(3)" class="example-btn" id="example3Btn">日常對話</button>
-    <button onclick="fillExample(4)" class="example-btn" id="example4Btn">科技新聞</button>
-  </div>
-  <br />
-  <div class="button-group">
-    <button onclick="convertToHanzi()" id="convertButton">漢字化</button>
-    <button onclick="copyOutput()" id="copyButton">複製結果</button>
-    <button onclick="takeScreenshot()" id="screenshotButton">截圖</button>
-  </div>
-  <div class="checkbox-wrapper">
-    <label>
-      <input type="checkbox" id="show-ruby" checked />
-      <span id="showRubyLabel">顯示原文注音</span>
-    </label>
-  </div>
-  <h2 id="outputTitle">漢字化後的文本</h2>
-  <div id="outputText"></div>
-  <div id="screenshotContainer" class="screenshot-container" style="display: none;">
-    <div id="screenshotTitle" class="screenshot-title"></div>
-    <img id="screenshotPreview" alt="Screenshot preview">
-  </div>
-
-  <div class="faq">
-    <h2 id="faqTitle">常見問題</h2>
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleAnswer(this)">
-        <span id="faq1Q">這個工具是如何運作的？</span>
-      </div>
-      <div class="faq-answer">
-        <span id="faq1A">本工具使用預先定義的英文單詞到漢字的映射表來進行轉換。它會將輸入的英文文本分解成單詞，然後查找每個單詞的對應漢字。</span>
-      </div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleAnswer(this)">
-        <span id="faq2Q">為什麼有些單詞沒有被轉換？</span>
-      </div>
-      <div class="faq-answer">
-        <span id="faq2A">如果某個單詞在我們的映射表中沒有對應的漢字，它將保持原樣。這通常發生在專有名詞、技術術語或不常用的詞彙上。</span>
-      </div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleAnswer(this)">
-        <span id="faq3Q">我可以貢獻新的單詞映射嗎？</span>
-      </div>
-      <div class="faq-answer">
-        <span id="faq3A">目前我們沒有開放用戶直接貢獻新的單詞映射。但如果您有建議，可以通過 Twitter 聯繫作者。</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer">
-    <p>made by <a href="https://twitter.com/tzengyuxio" target="_blank" id="authorTwitter">@tzengyuxio</a>, any suggestions are welcome.</p>
-  </div>
-  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="wordlist.js"></script>
 
@@ -658,17 +926,10 @@
     }
 
     function convertToHanzi() {
-      // 隱藏截圖預覽區域
-      const screenshotContainer = document.getElementById("screenshotContainer");
-      screenshotContainer.style.display = "none";
+      document.getElementById("screenshotContainer").style.display = "none";
 
       const inputTextArea = document.getElementById("inputText");
       let inputText = inputTextArea.value;
-
-      // 如果輸入框的內容與預設文字相同，則使用預設文字
-      if (inputText === inputTextArea.getAttribute("placeholder")) {
-        inputText = inputTextArea.placeholder;
-      }
 
       // M7: 縮寫展開
       inputText = expandContractions(inputText);
@@ -805,11 +1066,23 @@
       const textToCopy = tempDiv.innerText.replace(/\n/g, '\n').trim();
 
       navigator.clipboard.writeText(textToCopy).then(() => {
-        alert(languages[currentLanguage].copySuccess);
+        showToast(languages[currentLanguage].copySuccess);
       }).catch(err => {
         console.error('無法複製文本: ', err);
-        alert(languages[currentLanguage].copyError);
+        showToast(languages[currentLanguage].copyError, true);
       });
+    }
+
+    const TOAST_DURATION_MS = 2400;
+    let toastTimer = null;
+    function showToast(message, isError = false) {
+      const toast = document.getElementById("toast");
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.toggle("error", !!isError);
+      toast.classList.add("show");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), TOAST_DURATION_MS);
     }
 
     document
@@ -824,12 +1097,8 @@
       });
 
     function toggleAnswer(element) {
-      const answer = element.nextElementSibling;
-      if (answer.style.display === "block") {
-        answer.style.display = "none";
-      } else {
-        answer.style.display = "block";
-      }
+      const item = element.closest('.faq-item');
+      if (item) item.classList.toggle('open');
     }
 
     function getUrlParameter(name) {
@@ -851,29 +1120,6 @@
     // 頁面加載完成後初始化語言
     window.onload = initializeLanguage;
 
-    // 新增事件監聽器，處理 textarea 的焦點
-    document.getElementById("inputText").addEventListener("focus", function() {
-      if (this.value === this.getAttribute("placeholder")) {
-        this.value = "";
-        this.style.color = "#333";
-      }
-    });
-
-    document.getElementById("inputText").addEventListener("blur", function() {
-      if (this.value === "") {
-        this.value = this.getAttribute("placeholder");
-        this.style.color = "#999";
-      }
-    });
-
-    // 頁面加載時初始化 textarea 的顏色
-    window.addEventListener("load", function() {
-      const inputTextArea = document.getElementById("inputText");
-      if (inputTextArea.value === inputTextArea.getAttribute("placeholder")) {
-        inputTextArea.style.color = "#999";
-      }
-    });
-
     function takeScreenshot() {
       const outputDiv = document.getElementById("outputText");
       const screenshotContainer = document.getElementById("screenshotContainer");
@@ -882,15 +1128,13 @@
 
       if (!outputDiv || !screenshotContainer || !screenshotTitle || !screenshotPreview) {
         console.error("Required elements not found");
-        alert("Screenshot function is not available at the moment.");
+        showToast("Screenshot function is not available at the moment.", true);
         return;
       }
 
-      // 創建一個新的 div 來包裝 outputDiv 的內容
       const wrapperDiv = document.createElement('div');
       wrapperDiv.innerHTML = outputDiv.innerHTML;
-      wrapperDiv.id = "previewImage";
-      wrapperDiv.className = "output-wrapper";
+      wrapperDiv.className = "output";
       wrapperDiv.style.backgroundColor = 'white';
       console.log("outputDiv.clientWidth: ", outputDiv.clientWidth);
       wrapperDiv.style.width = (outputDiv.clientWidth - 220) + 'px';  // -200, -20
@@ -956,7 +1200,7 @@
       })
       .catch(function (error) {
         console.error('Screenshot generation failed:', error);
-        alert("Failed to generate screenshot. Please try again.");
+        showToast("Failed to generate screenshot. Please try again.", true);
       });
     }
   </script>
