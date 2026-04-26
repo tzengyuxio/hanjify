@@ -623,6 +623,16 @@
       return s;
     }
 
+    // Split a word into [leadingPunctuation, core, trailingPunctuation]
+    // so we can render with `${lead}<ruby>...</ruby>${trail}` correctly.
+    function splitPunctuation(word) {
+      let i = 0;
+      while (i < word.length && /[(\["'“‘]/.test(word[i])) i++;
+      let j = word.length;
+      while (j > i && /[,.!?:;)\]"'”’]/.test(word[j - 1])) j--;
+      return [word.slice(0, i), word.slice(i, j), word.slice(j)];
+    }
+
     // For each word index in `words`, return the clause terminator (. ! ?) that ends its clause, or null
     function computeClauseTerminators(words) {
       const terminators = new Array(words.length).fill(null);
@@ -676,26 +686,12 @@
         for (let wi = 0; wi < words.length; wi++) {
           const word = words[wi];
           if (word === "") continue;
-          const stripped = stripPunctuation(word);
-          const lower = stripped.toLowerCase();
-          let baseWord = word.toLowerCase();
-
-          // Legacy strip (kept for the existing format used downstream)
-          if (baseWord.startsWith("(")) baseWord = baseWord.slice(1);
-          if (
-            baseWord.endsWith(",") || baseWord.endsWith(".") ||
-            baseWord.endsWith(";") || baseWord.endsWith("!") ||
-            baseWord.endsWith("?") || baseWord.endsWith(":") ||
-            baseWord.endsWith(")")
-          ) {
-            baseWord = baseWord.slice(0, -1);
-          } else if (
-            baseWord.endsWith(",\"") || baseWord.endsWith(".\"") ||
-            baseWord.endsWith(";\"") || baseWord.endsWith("!\"") ||
-            baseWord.endsWith("?\"") || baseWord.endsWith(")\"")
-          ) {
-            baseWord = baseWord.slice(0, -2);
-          }
+          const [lead, core, trail] = splitPunctuation(word);
+          const stripped = core;
+          const lower = core.toLowerCase();
+          let baseWord = lower;
+          // Special case: uppercase "I"
+          if (core === "I") baseWord = "I";
 
           // §3.13 不轉清單: pure function words → keep as English
           if (noConvertSet.has(lower)) {
@@ -719,22 +715,20 @@
 
           // §3.5 when/which heuristic: 句首大寫 + 子句末 ? → interrogative form
           if (heuristicWords[lower]) {
-            const isCapitalized = stripped[0] && stripped[0] === stripped[0].toUpperCase();
+            const isCapitalized = core[0] && core[0] === core[0].toUpperCase();
             const clauseEnd = terminators[wi];
             const map = heuristicWords[lower];
             const chosen = (isCapitalized && clauseEnd === "?") ? map.interrogative : map.default;
-            const remainingPart = word.slice(stripped.length);
-            outputHTML += `<ruby>${chosen}<rt>${stripped}</rt></ruby>${remainingPart}`;
-            if (remainingPart === "") lastIsHanji = true;
+            outputHTML += `${lead}<ruby>${chosen}<rt>${core}</rt></ruby>${trail}`;
+            if (trail === "") lastIsHanji = true;
             else { outputHTML += " "; lastIsHanji = false; }
             continue;
           }
 
           // M3: Irregular verbs (lookup before suffix stripping)
           if (irregulars[lower]) {
-            const remainingPart = word.slice(stripped.length);
-            outputHTML += `<ruby>${irregulars[lower]}<rt>${stripped}</rt></ruby>${remainingPart}`;
-            if (remainingPart === "") lastIsHanji = true;
+            outputHTML += `${lead}<ruby>${irregulars[lower]}<rt>${core}</rt></ruby>${trail}`;
+            if (trail === "") lastIsHanji = true;
             else { outputHTML += " "; lastIsHanji = false; }
             continue;
           }
@@ -751,18 +745,16 @@
               }
             }
           }
-          if (word === "I") {
-            baseWord = "I";
-          }
           if (wordList[baseWord]) {
             const baseWordLength = baseWord.length;
-            const displayedPart = word.slice(0, baseWordLength);
-            const remainingPart = word.slice(baseWordLength);
-            outputHTML += `<ruby>${wordList[baseWord]}<rt>${displayedPart}</rt></ruby>${remainingPart}`;
-            if (remainingPart === "") {
+            const displayedPart = core.slice(0, baseWordLength);
+            const remainingPart = core.slice(baseWordLength);
+            outputHTML += `${lead}<ruby>${wordList[baseWord]}<rt>${displayedPart}</rt></ruby>${remainingPart}${trail}`;
+            if (trail === "" && remainingPart === "") {
               lastIsHanji = true;
             } else {
               outputHTML += " ";
+              lastIsHanji = false;
             }
           } else {
             if (lastIsHanji) {
