@@ -11,6 +11,12 @@
   <meta property="og:image" content="https://hanjify.tzengyuxio.me/og-image.png" />
   <meta property="og:url" content="https://hanjify.tzengyuxio.me" />
   <meta property="og:type" content="website" />
+  <!-- Twitter card (other twitter:* fall back to og:*) -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-9EFB2TQY54"></script>
   <script>
@@ -19,7 +25,7 @@
     gtag('js', new Date());
     gtag('config', 'G-9EFB2TQY54');
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
   <style>
     :root {
       --bg: #f4f6f9;
@@ -476,7 +482,7 @@
       .examples-label { display: none; }
       textarea { min-height: 180px; font-size: 14px; }
       .output { font-size: 17px; min-height: 180px; padding: 14px 16px; }
-      .faq { padding: 18px 18px; }
+      .faq { padding: 18px; }
     }
   </style>
 </head>
@@ -1142,9 +1148,7 @@
       const baseBarHeight = 24;
       const dpr = window.devicePixelRatio || 1;
 
-      // Scale watermark to fit narrow widths (e.g. mobile output ≈ 315px).
-      // Use offsetWidth (border-box) so the wrapper matches the source's
-      // total rendered width and wraps lines at the same points.
+      // Shrink watermark to fit narrow widths (mobile output ≈ 315px).
       const measureCtx = document.createElement('canvas').getContext('2d');
       measureCtx.font = `${baseFontSize}px ${watermarkFont}`;
       const baseWPrefix = measureCtx.measureText(watermarkPrefix).width;
@@ -1152,6 +1156,7 @@
       measureCtx.font = `bold ${baseFontSize}px ${watermarkFont}`;
       const baseWBrand = measureCtx.measureText(watermarkBrand).width;
       const baseTextWidth = baseWPrefix + baseWBrand + baseWSuffix;
+      // offsetWidth (border-box) so the clone wraps at the same points as outputDiv.
       const cssWidth = outputDiv.offsetWidth;
       const maxTextWidth = cssWidth - watermarkPadX * 2;
       const fitScale = baseTextWidth > maxTextWidth ? maxTextWidth / baseTextWidth : 1;
@@ -1163,17 +1168,17 @@
       wrapperDiv.className = "output";
       wrapperDiv.style.backgroundColor = 'white';
       wrapperDiv.style.width = cssWidth + 'px';
-      wrapperDiv.style.fontFamily = getComputedStyle(outputDiv).fontFamily;
-      wrapperDiv.style.fontSize = getComputedStyle(outputDiv).fontSize;
-      wrapperDiv.style.lineHeight = getComputedStyle(outputDiv).lineHeight;
+      const outputStyle = getComputedStyle(outputDiv);
+      wrapperDiv.style.fontFamily = outputStyle.fontFamily;
+      wrapperDiv.style.fontSize = outputStyle.fontSize;
+      wrapperDiv.style.lineHeight = outputStyle.lineHeight;
       document.body.appendChild(wrapperDiv);
 
       const cssHeight = wrapperDiv.offsetHeight + barHeight;
 
       // HiDPI: render at devicePixelRatio so retina screenshots stay crisp.
-      // options.width/height set the output raster size; style.width/height
-      // pin the clone's CSS box to logical size so transform: scale(dpr)
-      // expands it into the larger raster cleanly.
+      // The explicit style.width/height keeps dom-to-image from stretching the
+      // clone box to match options.width and clipping the right half.
       domtoimage.toPng(wrapperDiv, {
         width: cssWidth * dpr,
         height: cssHeight * dpr,
@@ -1227,40 +1232,21 @@
           screenshotPreview.onerror = function() {
             console.error("Failed to load screenshot preview");
           };
-          // Cap preview display size so HiDPI source isn't pixel-doubled into
-          // the full container width. ~1.4x of logical width keeps the source
-          // close enough to 1:1 device pixels on retina to avoid soft edges.
+          // Cap preview display so HiDPI source isn't pixel-doubled into the
+          // container width on retina, which would visually soften the image.
           screenshotPreview.style.width = '100%';
           screenshotPreview.style.maxWidth = `${Math.round(cssWidth * 1.4)}px`;
           screenshotPreview.src = finalDataUrl;
           screenshotTitle.textContent = languages[currentLanguage].screenshotTitle;
-
-          /**
-          // 創建下載按鈕
-          const downloadButton = document.createElement("a");
-          downloadButton.href = finalDataUrl;
-          downloadButton.download = "hanjify_screenshot.png";
-          downloadButton.textContent = languages[currentLanguage].downloadScreenshot;
-          downloadButton.id = "downloadButton";
-
-          // 如果已經存在舊的下載按鈕，則移除它
-          const oldDownloadButton = document.getElementById("downloadButton");
-          if (oldDownloadButton) {
-            oldDownloadButton.remove();
-          }
-
-          // 添加新的下載按鈕
-          screenshotContainer.appendChild(downloadButton);
-           **/
         };
         img.src = dataUrl;
-
-        // 移除臨時創建的 wrapper div
-        document.body.removeChild(wrapperDiv);
       })
       .catch(function (error) {
         console.error('Screenshot generation failed:', error);
         showToast("Failed to generate screenshot. Please try again.", true);
+      })
+      .finally(function () {
+        document.body.removeChild(wrapperDiv);
       });
     }
   </script>
