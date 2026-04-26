@@ -1162,14 +1162,17 @@
       const cssHeight = wrapperDiv.offsetHeight + barHeight;
 
       // HiDPI: render at devicePixelRatio so retina screenshots stay crisp.
-      // dom-to-image's transform/width/height pattern: scale dom up, set
-      // raster size to match, then divide back at draw time.
+      // options.width/height set the output raster size; style.width/height
+      // pin the clone's CSS box to logical size so transform: scale(dpr)
+      // expands it into the larger raster cleanly.
       domtoimage.toPng(wrapperDiv, {
         width: cssWidth * dpr,
         height: cssHeight * dpr,
         style: {
           transform: `scale(${dpr})`,
           transformOrigin: 'top left',
+          width: `${cssWidth}px`,
+          height: `${cssHeight}px`,
         },
       })
       .then(function (dataUrl) {
