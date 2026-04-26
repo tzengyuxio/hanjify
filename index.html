@@ -1136,8 +1136,7 @@
       wrapperDiv.innerHTML = outputDiv.innerHTML;
       wrapperDiv.className = "output";
       wrapperDiv.style.backgroundColor = 'white';
-      console.log("outputDiv.clientWidth: ", outputDiv.clientWidth);
-      wrapperDiv.style.width = (outputDiv.clientWidth - 220) + 'px';  // -200, -20
+      wrapperDiv.style.width = outputDiv.clientWidth + 'px';
       wrapperDiv.style.fontFamily = getComputedStyle(outputDiv).fontFamily;
       wrapperDiv.style.fontSize = getComputedStyle(outputDiv).fontSize;
       wrapperDiv.style.lineHeight = getComputedStyle(outputDiv).lineHeight;
@@ -1166,8 +1165,7 @@
           const finalDataUrl = canvas.toDataURL('image/png');
 
           screenshotPreview.onload = function() {
-            console.log("Screenshot preview loaded");
-            screenshotContainer.style.display = "block"; // 顯示截圖預覽區域
+            screenshotContainer.style.display = "block";
           };
           screenshotPreview.onerror = function() {
             console.error("Failed to load screenshot preview");
