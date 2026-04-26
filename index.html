@@ -1132,7 +1132,10 @@
         return;
       }
 
-      const watermarkText = 'made by https://HANJIFY.tzengyuxio.me';
+      // Watermark composed of three runs so the brand can be highlighted.
+      const watermarkPrefix = 'made by https://';
+      const watermarkBrand = 'HANJIFY';
+      const watermarkSuffix = '.tzengyuxio.me';
       const watermarkFont = '"Monaco", "Consolas", "Menlo", monospace';
       const watermarkPadX = 10;
       const baseFontSize = 16;
@@ -1144,7 +1147,11 @@
       // total rendered width and wraps lines at the same points.
       const measureCtx = document.createElement('canvas').getContext('2d');
       measureCtx.font = `${baseFontSize}px ${watermarkFont}`;
-      const baseTextWidth = measureCtx.measureText(watermarkText).width;
+      const baseWPrefix = measureCtx.measureText(watermarkPrefix).width;
+      const baseWSuffix = measureCtx.measureText(watermarkSuffix).width;
+      measureCtx.font = `bold ${baseFontSize}px ${watermarkFont}`;
+      const baseWBrand = measureCtx.measureText(watermarkBrand).width;
+      const baseTextWidth = baseWPrefix + baseWBrand + baseWSuffix;
       const cssWidth = outputDiv.offsetWidth;
       const maxTextWidth = cssWidth - watermarkPadX * 2;
       const fitScale = baseTextWidth > maxTextWidth ? maxTextWidth / baseTextWidth : 1;
@@ -1190,11 +1197,27 @@
           ctx.scale(dpr, dpr);
           ctx.fillStyle = 'rgba(0, 0, 128, 0.8)';
           ctx.fillRect(0, cssHeight - barHeight, cssWidth, barHeight);
+
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          ctx.font = `${watermarkFontSize}px ${watermarkFont}`;
+          const wPrefix = ctx.measureText(watermarkPrefix).width;
+          const wSuffix = ctx.measureText(watermarkSuffix).width;
+          ctx.font = `bold ${watermarkFontSize}px ${watermarkFont}`;
+          const wBrand = ctx.measureText(watermarkBrand).width;
+          const xPrefix = cssWidth - watermarkPadX - wPrefix - wBrand - wSuffix;
+          const xBrand = xPrefix + wPrefix;
+          const xSuffix = xBrand + wBrand;
+          const baseY = cssHeight - barHeight / 2;
+
           ctx.font = `${watermarkFontSize}px ${watermarkFont}`;
           ctx.fillStyle = 'rgba(250, 250, 250, .8)';
-          ctx.textAlign = 'right';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(watermarkText, cssWidth - watermarkPadX, cssHeight - barHeight / 2);
+          ctx.fillText(watermarkPrefix, xPrefix, baseY);
+          ctx.fillText(watermarkSuffix, xSuffix, baseY);
+
+          ctx.font = `bold ${watermarkFontSize}px ${watermarkFont}`;
+          ctx.fillStyle = '#ffd54a';
+          ctx.fillText(watermarkBrand, xBrand, baseY);
 
           const finalDataUrl = canvas.toDataURL('image/png');
 
@@ -1204,6 +1227,11 @@
           screenshotPreview.onerror = function() {
             console.error("Failed to load screenshot preview");
           };
+          // Cap preview display size so HiDPI source isn't pixel-doubled into
+          // the full container width. ~1.4x of logical width keeps the source
+          // close enough to 1:1 device pixels on retina to avoid soft edges.
+          screenshotPreview.style.width = '100%';
+          screenshotPreview.style.maxWidth = `${Math.round(cssWidth * 1.4)}px`;
           screenshotPreview.src = finalDataUrl;
           screenshotTitle.textContent = languages[currentLanguage].screenshotTitle;
 
