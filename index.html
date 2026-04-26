@@ -1137,28 +1137,40 @@
       const watermarkPadX = 10;
       const baseFontSize = 16;
       const baseBarHeight = 24;
+      const dpr = window.devicePixelRatio || 1;
 
       // Scale watermark to fit narrow widths (e.g. mobile output ≈ 315px)
       const measureCtx = document.createElement('canvas').getContext('2d');
       measureCtx.font = `${baseFontSize}px ${watermarkFont}`;
       const baseTextWidth = measureCtx.measureText(watermarkText).width;
-      const maxTextWidth = outputDiv.clientWidth - watermarkPadX * 2;
-      const scale = baseTextWidth > maxTextWidth ? maxTextWidth / baseTextWidth : 1;
-      const watermarkFontSize = Math.max(8, Math.floor(baseFontSize * scale));
-      const barHeight = Math.max(14, Math.floor(baseBarHeight * scale));
+      const cssWidth = outputDiv.clientWidth;
+      const maxTextWidth = cssWidth - watermarkPadX * 2;
+      const fitScale = baseTextWidth > maxTextWidth ? maxTextWidth / baseTextWidth : 1;
+      const watermarkFontSize = Math.max(8, Math.floor(baseFontSize * fitScale));
+      const barHeight = Math.max(14, Math.floor(baseBarHeight * fitScale));
 
       const wrapperDiv = document.createElement('div');
       wrapperDiv.innerHTML = outputDiv.innerHTML;
       wrapperDiv.className = "output";
       wrapperDiv.style.backgroundColor = 'white';
-      wrapperDiv.style.width = outputDiv.clientWidth + 'px';
+      wrapperDiv.style.width = cssWidth + 'px';
       wrapperDiv.style.fontFamily = getComputedStyle(outputDiv).fontFamily;
       wrapperDiv.style.fontSize = getComputedStyle(outputDiv).fontSize;
       wrapperDiv.style.lineHeight = getComputedStyle(outputDiv).lineHeight;
       document.body.appendChild(wrapperDiv);
 
+      const cssHeight = wrapperDiv.offsetHeight + barHeight;
+
+      // HiDPI: render at devicePixelRatio so retina screenshots stay crisp.
+      // dom-to-image's transform/width/height pattern: scale dom up, set
+      // raster size to match, then divide back at draw time.
       domtoimage.toPng(wrapperDiv, {
-        height: wrapperDiv.offsetHeight + barHeight,
+        width: cssWidth * dpr,
+        height: cssHeight * dpr,
+        style: {
+          transform: `scale(${dpr})`,
+          transformOrigin: 'top left',
+        },
       })
       .then(function (dataUrl) {
         const img = new Image();
@@ -1169,13 +1181,15 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0);
 
+          // Draw watermark in CSS-pixel coords; ctx.scale handles dpr.
+          ctx.scale(dpr, dpr);
           ctx.fillStyle = 'rgba(0, 0, 128, 0.8)';
-          ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
+          ctx.fillRect(0, cssHeight - barHeight, cssWidth, barHeight);
           ctx.font = `${watermarkFontSize}px ${watermarkFont}`;
           ctx.fillStyle = 'rgba(250, 250, 250, .8)';
           ctx.textAlign = 'right';
           ctx.textBaseline = 'middle';
-          ctx.fillText(watermarkText, canvas.width - watermarkPadX, canvas.height - barHeight / 2);
+          ctx.fillText(watermarkText, cssWidth - watermarkPadX, cssHeight - barHeight / 2);
 
           const finalDataUrl = canvas.toDataURL('image/png');
 
