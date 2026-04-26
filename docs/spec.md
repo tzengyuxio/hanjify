@@ -125,7 +125,7 @@ CJK 三地通用優先：
 | `re-` | 再 | rebuild→再建、restart→再起 |
 | `any-` | 任 | anybody→任体 |
 | `some-` | 某 | something→某物 |
-| `every-` | 毎 | everyone→毎一 |
+| `every-` | 每 | everyone→每一 |
 | `no-` | 无 | nobody→无体、nothing→无物 |
 
 #### M2d. wordlist 整詞優先
