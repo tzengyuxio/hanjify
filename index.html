@@ -255,12 +255,13 @@
   </div>
 
   <textarea id="inputText" rows="8"
-    placeholder="在這裡輸入英文文本...">Once when I was six years old I saw a magnificent picture in a book about the jungle. It was a picture of a snake swallowing an animal. In the book it said: "Snakes swallow their prey whole, without chewing it. After that they are not able to move, and they sleep through the six months that they need for digestion."</textarea>
+    placeholder="在這裡輸入英文文本...">When I was young, my grandfather and I often went to the park. "Which tree is the oldest?" he would ask. I never knew the answer. He smiled and said, "All of them are old, like me." Now I think of him every day, and I wish I had asked him more.</textarea>
   <div class="example-buttons">
     <span id="exampleLabel">範例：</span>
-    <button onclick="fillExample(1)" class="example-btn" id="example1Btn">小王子</button>
-    <button onclick="fillExample(2)" class="example-btn" id="example2Btn">科技新聞</button>
+    <button onclick="fillExample(1)" class="example-btn" id="example1Btn">祖父的回憶</button>
+    <button onclick="fillExample(2)" class="example-btn" id="example2Btn">小王子</button>
     <button onclick="fillExample(3)" class="example-btn" id="example3Btn">日常對話</button>
+    <button onclick="fillExample(4)" class="example-btn" id="example4Btn">科技新聞</button>
   </div>
   <br />
   <div class="button-group">
@@ -358,9 +359,10 @@
         screenshotButton: "Screenshot",
         screenshotTitle: "Screenshot Preview (right click to download)",
         exampleLabel: "Examples:",
-        example1Btn: "The Little Prince",
-        example2Btn: "Tech News",
+        example1Btn: "Grandfather's Memory",
+        example2Btn: "The Little Prince",
         example3Btn: "Daily Conversation",
+        example4Btn: "Tech News",
       },
       zh_tw: {
         title: "英語漢字化工具",
@@ -400,9 +402,10 @@
         screenshotButton: "截圖",
         screenshotTitle: "截圖預覽（右鍵下載）",
         exampleLabel: "範例：",
-        example1Btn: "小王子",
-        example2Btn: "科技新聞",
+        example1Btn: "祖父的回憶",
+        example2Btn: "小王子",
         example3Btn: "日常對話",
+        example4Btn: "科技新聞",
       },
       zh_cn: {
         title: "英语汉字化工具",
@@ -442,9 +445,10 @@
         screenshotButton: "截图",
         screenshotTitle: "截图预览（右键下载）",
         exampleLabel: "范例：",
-        example1Btn: "小王子",
-        example2Btn: "科技新闻",
+        example1Btn: "祖父的回忆",
+        example2Btn: "小王子",
         example3Btn: "日常对话",
+        example4Btn: "科技新闻",
       },
       ja: {
         title: "英語漢字化ツール",
@@ -484,9 +488,10 @@
         screenshotButton: "スクリーンショット",
         screenshotTitle: "スクリーンショットプレビュー（右クリックでダウンロード）",
         exampleLabel: "例文：",
-        example1Btn: "星の王子さま",
-        example2Btn: "テクノロジーニュース",
+        example1Btn: "祖父の思い出",
+        example2Btn: "星の王子さま",
         example3Btn: "日常会話",
+        example4Btn: "テクノロジーニュース",
       }
     };
 
@@ -512,6 +517,7 @@
       document.getElementById("example1Btn").textContent = languages[lang].example1Btn;
       document.getElementById("example2Btn").textContent = languages[lang].example2Btn;
       document.getElementById("example3Btn").textContent = languages[lang].example3Btn;
+      document.getElementById("example4Btn").textContent = languages[lang].example4Btn;
 
       // 更新語言按鈕的高亮狀態
       document.querySelectorAll('.language-buttons button').forEach(btn => {
@@ -521,9 +527,10 @@
     }
 
     const exampleTexts = {
-      1: `Once when I was six years old I saw a magnificent picture in a book about the jungle. It was a picture of a snake swallowing an animal. In the book it said: "Snakes swallow their prey whole, without chewing it. After that they are not able to move, and they sleep through the six months that they need for digestion."`,
-      2: `Scientists have discovered a new species of deep-sea fish that can produce its own light. The fish lives more than three thousand meters below the ocean surface. Researchers say this discovery could help us understand how life survives in extreme environments. The team plans to study the fish further in their laboratory.`,
-      3: `Good morning! How are you today? I am fine, thank you. The weather is very nice today. Would you like to go for a walk in the park? We could get some coffee and enjoy the sunshine. That sounds like a great idea! Let me get my jacket and we can go.`
+      1: `When I was young, my grandfather and I often went to the park. "Which tree is the oldest?" he would ask. I never knew the answer. He smiled and said, "All of them are old, like me." Now I think of him every day, and I wish I had asked him more.`,
+      2: `Once when I was six years old I saw a magnificent picture in a book about the jungle. It was a picture of a snake swallowing an animal. In the book it said: "Snakes swallow their prey whole, without chewing it. After that they are not able to move, and they sleep through the six months that they need for digestion."`,
+      3: `Good morning! How are you today? I am fine, thank you. The weather is very nice today. Would you like to go for a walk in the park? We could get some coffee and enjoy the sunshine. That sounds like a great idea! Let me get my jacket and we can go.`,
+      4: `Scientists have discovered a new species of deep-sea fish that can produce its own light. The fish lives more than three thousand meters below the ocean surface. Researchers say this discovery could help us understand how life survives in extreme environments. The team plans to study the fish further in their laboratory.`
     };
 
     function fillExample(num) {
