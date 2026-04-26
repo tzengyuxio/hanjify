@@ -31,6 +31,10 @@
 3. 見つからない場合、一般的な接尾辞（s、ed、ing など）を除去して再検索
 4. 対応できない単語はそのまま表示
 
+## 変換仕様
+
+変換ルールは [`docs/spec.md`](docs/spec.md) に定義されています——本ツールの single source of truth であり、機能語対応、形態素ルール、字形採用、衝突回避、境界事例を網羅しています。本ウェブツールと [Claude Code `hanjify` skill](https://github.com/tzengyuxio/skills/tree/main/hanjify) は同じ仕様を実装しています。
+
 ## ローカル実行
 
 ```bash

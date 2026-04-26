@@ -31,6 +31,10 @@
 3. 찾을 수 없으면 일반적인 접미사(s, ed, ing 등)를 제거 후 재검색
 4. 대응할 수 없는 단어는 그대로 표시
 
+## 변환 사양
+
+변환 규칙은 [`docs/spec.md`](docs/spec.md)에 정의되어 있습니다 — 본 도구의 single source of truth이며, 기능어 대응, 형태소 규칙, 자형 채택, 충돌 회피, 경계 사례를 포함합니다. 본 웹 도구와 [Claude Code `hanjify` skill](https://github.com/tzengyuxio/skills/tree/main/hanjify) 모두 같은 사양을 구현합니다.
+
 ## 로컬 실행
 
 ```bash

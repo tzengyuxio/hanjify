@@ -31,6 +31,10 @@ Output: 其 小 王子 活於 上 一 小 行星。
 3. If not found, common suffixes (s, ed, ing, etc.) are stripped and retried
 4. Unmatched words pass through unchanged
 
+## Conversion Spec
+
+The conversion rules are defined in [`docs/spec.md`](docs/spec.md) — the canonical source of truth covering function-word mappings, morphological rules, character-form choices, conflict avoidance, and edge cases. Both this web tool and the [Claude Code `hanjify` skill](https://github.com/tzengyuxio/skills/tree/main/hanjify) implement the same spec.
+
 ## Running Locally
 
 ```bash
