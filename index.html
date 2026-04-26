@@ -1139,11 +1139,13 @@
       const baseBarHeight = 24;
       const dpr = window.devicePixelRatio || 1;
 
-      // Scale watermark to fit narrow widths (e.g. mobile output ≈ 315px)
+      // Scale watermark to fit narrow widths (e.g. mobile output ≈ 315px).
+      // Use offsetWidth (border-box) so the wrapper matches the source's
+      // total rendered width and wraps lines at the same points.
       const measureCtx = document.createElement('canvas').getContext('2d');
       measureCtx.font = `${baseFontSize}px ${watermarkFont}`;
       const baseTextWidth = measureCtx.measureText(watermarkText).width;
-      const cssWidth = outputDiv.clientWidth;
+      const cssWidth = outputDiv.offsetWidth;
       const maxTextWidth = cssWidth - watermarkPadX * 2;
       const fitScale = baseTextWidth > maxTextWidth ? maxTextWidth / baseTextWidth : 1;
       const watermarkFontSize = Math.max(8, Math.floor(baseFontSize * fitScale));
