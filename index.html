@@ -8,7 +8,7 @@
   <!-- OpenGraph tags -->
   <meta property="og:title" content="HANJIFY - 英語漢字化工具" />
   <meta property="og:description" content="Fun 工具 to convert English 文 to 中国的 character representation. Experience 差異語言文 conversions! | Fun tool to convert English text to Chinese character representation. Experience different language text conversions!" />
-  <meta property="og:image" content="https://hanjify.tzengyuxio.me/og-image.png" />
+  <meta property="og:image" content="https://hanjify.tzengyuxio.me/og-image.png?v=20260428" />
   <meta property="og:url" content="https://hanjify.tzengyuxio.me" />
   <meta property="og:type" content="website" />
   <!-- Twitter card (other twitter:* fall back to og:*) -->
@@ -794,7 +794,7 @@
       document.getElementById("example4Btn").textContent = languages[lang].example4Btn;
 
       // 更新語言按鈕的高亮狀態
-      document.querySelectorAll('.language-buttons button').forEach(btn => {
+      document.querySelectorAll('.lang-seg button').forEach(btn => {
         btn.classList.remove('active');
       });
       document.getElementById(`${lang}-btn`).classList.add('active');
